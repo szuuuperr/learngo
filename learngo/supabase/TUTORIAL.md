@@ -291,6 +291,10 @@ Ini normal untuk anon key — `users` hanya bisa dibaca oleh user yang login. In
 
 ## Berikutnya
 
-Tahap 2 dan 3 selesai: login Google sudah tersambung ke session Supabase, `isLoggedIn` membaca session asli, dan `GameContext` mengambil nama/XP/level dari baris `users`.
+Tahap 2, 3, dan 4 selesai: login Google tersambung ke session Supabase, `isLoggedIn`
+membaca session asli, dan AI Tutor lewat `/api/tutor` (Langflow).
 
-Yang masih mock: `services/aiService.js` (OpenAI, key bocor ke client) dan upload PDF di `AITutorScreen`. Keduanya digantikan Langflow di Tahap 4 dan 5.
+Panduan setup Langflow ada di `langflow/README.md`.
+
+Yang masih mock: upload PDF di `AITutorScreen` (Tahap 5), kuis (Tahap 6), dan community
+realtime (Tahap 7).

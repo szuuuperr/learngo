@@ -6,12 +6,8 @@ import {
   Sparkles, ChevronDown, X, Loader, Code2, RotateCcw,
   Paperclip, Lightbulb,
 } from 'lucide-react'
-import { user, mockAIResponses } from '../data/mockData'
+import { user } from '../data/mockData'
 import { useGame } from '../context/GameContext'
-import { sendSocraticMessage } from '../services/aiService'
-
-// ─── OpenAI API key from env (undefined when not set) ─────────────────────────
-const OPENAI_KEY = import.meta.env.VITE_OPENAI_API_KEY
 
 // ─── Code Block with Copy + Highlight ──────────────────────────────────────
 function CodeBlock({ code, language = 'python' }) {
@@ -272,7 +268,6 @@ export default function AITutorScreen() {
   const [showSummary, setShowSummary] = useState(false)
   const bottomRef = useRef(null)
   const inputRef  = useRef(null)
-  const aiIdx     = useRef(0)
   // Monotonic message id. A counter avoids Date.now() so ids stay stable and
   // never collide when two messages land in the same millisecond.
   const msgId    = useRef(0)
@@ -289,30 +284,42 @@ export default function AITutorScreen() {
     setInput('')
     setLoading(true)
 
-    if (OPENAI_KEY) {
-      // ── Real OpenAI API ────────────────────────────────────────────────────
-      try {
-        // Build chat history: existing messages + the new user message
-        const history = [...messages, userMsg].map(m => ({
-          role: m.role === 'assistant' ? 'assistant' : 'user',
-          content: m.content,
-        }))
-        const reply = await sendSocraticMessage(history, socraticMode, OPENAI_KEY)
-        setMessages(prev => [...prev, { id: nextId(), role: 'assistant', content: reply, time }])
-      } catch (err) {
-        console.error('OpenAI error:', err)
-        setToast(`⚠️ AI unavailable: ${err.message.slice(0, 60)} — using offline mode`)
-        // Fallback to mock
-        const reply = mockAIResponses[aiIdx.current % mockAIResponses.length]
-        aiIdx.current++
-        setMessages(prev => [...prev, { id: nextId(), role: 'assistant', content: reply, time }])
+    // Langflow is called server-side through /api/tutor. The API key stays on
+    // the server and the off-topic guard cannot be bypassed from the client.
+    const history = [...messages, userMsg]
+      .filter(m => m.role === 'user' || m.role === 'assistant')
+      .slice(-6)
+      .map(m => ({ role: m.role, content: m.content }))
+
+    try {
+      const res = await fetch('/api/tutor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: trimmed, mode: socraticMode, history }),
+      })
+
+      const data = await res.json().catch(() => ({}))
+
+      if (!res.ok) {
+        // 401 means the session went away — usually the tab sat idle long enough
+        // for the token to expire. Anything else is a server-side problem.
+        throw new Error(
+          res.status === 401
+            ? 'Your session expired. Please sign in again.'
+            : data.error || 'The AI tutor is unreachable right now.',
+        )
       }
-    } else {
-      // ── Mock fallback (no API key) ─────────────────────────────────────────
-      await new Promise(r => setTimeout(r, 1400 + Math.random() * 800))
-      const reply = mockAIResponses[aiIdx.current % mockAIResponses.length]
-      aiIdx.current++
-      setMessages(prev => [...prev, { id: nextId(), role: 'assistant', content: reply, time }])
+
+      setMessages(prev => [...prev, { id: nextId(), role: 'assistant', content: data.reply, time }])
+    } catch (err) {
+      console.error('Tutor error:', err)
+      setToast(`⚠️ ${err.message}`)
+      setMessages(prev => [...prev, {
+        id: nextId(),
+        role: 'assistant',
+        content: `Maaf, saya sedang tidak bisa merespons. (${err.message})`,
+        time,
+      }])
     }
 
     setLoading(false)
@@ -340,7 +347,6 @@ export default function AITutorScreen() {
     setMessages(INITIAL_MESSAGES)
     setUploadedFile(null)
     setShowSummary(false)
-    aiIdx.current = 0
   }
 
   return (

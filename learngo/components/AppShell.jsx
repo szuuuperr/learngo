@@ -147,11 +147,12 @@ export default function AppShell({ children }) {
   const {
     navigate, navTab,
     isLoggedIn, showAuth, setShowAuth, showLogout, setShowLogout,
+    showPwaBanner: pwaBannerVisible,
     toast, showToast, clearToast,
     questModal, setQuestModal,
     activeLesson, setActiveLesson,
-    showOnboarding, setShowOnboarding,
-    showPwaBanner, handlePwaInstall, handlePwaDismiss,
+    showOnboarding,
+    handlePwaInstall, handlePwaDismiss,
     handleLogout, handleAuthSuccess,
   } = useUI()
 
@@ -218,7 +219,7 @@ export default function AppShell({ children }) {
       )}
 
       {/* ── PWA Install Banner ── */}
-      {showPwaBanner && (
+      {pwaBannerVisible && (
         <PWAInstallBanner onInstall={handlePwaInstall} onDismiss={handlePwaDismiss} />
       )}
     </div>

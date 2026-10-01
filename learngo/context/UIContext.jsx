@@ -5,6 +5,8 @@ import React, {
 } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { useGame } from './GameContext'
+import { useAuth } from './AuthContext'
+import { useHydrated } from '@/lib/useHydrated'
 
 // ─── Route map ────────────────────────────────────────────────────────────────
 // Screen ids used across the app (onNavigate('tutor'), etc.) mapped to paths,
@@ -34,14 +36,16 @@ export function UIProvider({ children }) {
   const { toastMsg, clearToast } = useGame()
 
   // ── Auth ────────────────────────────────────────────────────────────────────
-  // TODO(Tahap 3): replace the `true` below with the real Supabase session.
-  const [isLoggedIn, setIsLoggedIn] = useState(true)
+  // Session state lives in AuthContext; this provider only mirrors it so the
+  // existing `useUI().isLoggedIn` consumers keep working unchanged.
+  const { isLoggedIn, signOut } = useAuth()
   const [showAuth, setShowAuth] = useState(false)
   const [showLogout, setShowLogout] = useState(false)
 
-  // Read once during the initial render instead of inside an effect. The server
-  // has no localStorage and always renders false, and suppressing the hydration
-  // warning on <html> keeps the markup mismatch from being reported.
+  // Overlays driven by localStorage must not render until after hydration,
+  // otherwise the client renders markup the server never produced.
+  const hydrated = useHydrated()
+
   const [showOnboarding, setShowOnboarding] = useState(
     () => typeof window !== 'undefined' && !localStorage.getItem('learngo_onboarded'),
   )
@@ -111,11 +115,18 @@ export function UIProvider({ children }) {
   }, [])
 
   // ── Auth handlers ───────────────────────────────────────────────────────────
-  const handleLogout = useCallback(() => {
+  const handleLogout = useCallback(async () => {
     setShowLogout(false)
-    setIsLoggedIn(false)
-    showToast('✅ Logged out successfully')
-  }, [showToast])
+    try {
+      await signOut()
+      showToast('✅ Logged out successfully')
+    } catch (err) {
+      // The session is gone locally either way, so a failed server call should
+      // not leave the modal spinning.
+      console.error('[auth] sign out failed:', err.message)
+      showToast('⚠️ Signed out locally, server call failed')
+    }
+  }, [signOut, showToast])
 
   const handleAuthSuccess = useCallback(() => {
     setShowAuth(false)
@@ -126,16 +137,20 @@ export function UIProvider({ children }) {
   // ── Derived ─────────────────────────────────────────────────────────────────
   const navTab = PATH_TO_TAB[pathname] ?? 'home'
 
+  // Gated on `hydrated` so the server and the hydration pass both render
+  // without the modal, and it appears only on the client afterwards.
+  const onboardingVisible = hydrated && showOnboarding
+
   return (
     <UIContext.Provider value={{
       navigate, navTab, pathname,
-      isLoggedIn, setIsLoggedIn,
+      isLoggedIn,
       showAuth, setShowAuth,
       showLogout, setShowLogout,
       toast: activeToast, showToast, clearToast: dismissToast,
       questModal, setQuestModal,
       activeLesson, setActiveLesson,
-      showOnboarding, setShowOnboarding,
+      showOnboarding: onboardingVisible, setShowOnboarding,
       pwaPrompt, showPwaBanner,
       handlePwaInstall, handlePwaDismiss,
       handleLogout, handleAuthSuccess,

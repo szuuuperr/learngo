@@ -80,14 +80,14 @@ function QuizModal({ onClose, subject }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian/80 backdrop-blur-sm animate-fade-in">
       <div className="w-full max-w-lg glass-card rounded-3xl border border-white/10 overflow-hidden shadow-card animate-slide-up">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/8">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
           <div className="flex items-center gap-2">
-            <HelpCircle size={18} className="text-cyan-DEFAULT" />
+            <HelpCircle size={18} className="text-cyan" />
             <span className="font-bold text-white">Interactive Quiz</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-DEFAULT">{Math.min(current + 1, questions.length)}/{questions.length}</span>
-            <button onClick={onClose} className="text-slate-DEFAULT hover:text-white transition-colors">
+            <span className="text-xs text-slate">{Math.min(current + 1, questions.length)}/{questions.length}</span>
+            <button onClick={onClose} className="text-slate hover:text-white transition-colors">
               <X size={18} />
             </button>
           </div>
@@ -95,7 +95,7 @@ function QuizModal({ onClose, subject }) {
 
         {/* Progress bar */}
         <div className="h-1 bg-navy">
-          <div className="h-full bg-gradient-to-r from-orange-DEFAULT to-yellow-400 transition-all duration-500"
+          <div className="h-full bg-gradient-to-r from-orange to-yellow-400 transition-all duration-500"
             style={{ width: `${((current) / questions.length) * 100}%` }} />
         </div>
 
@@ -107,25 +107,25 @@ function QuizModal({ onClose, subject }) {
                 {q.options.map((opt, i) => {
                   let style = 'glass-card border border-white/10 hover:border-white/25'
                   if (answered) {
-                    if (i === q.correct) style = 'bg-emerald-DEFAULT/15 border border-emerald-DEFAULT/50 ring-1 ring-emerald-DEFAULT/30'
+                    if (i === q.correct) style = 'bg-emerald/15 border border-emerald/50 ring-1 ring-emerald/30'
                     else if (i === selected && i !== q.correct) style = 'bg-red-500/15 border border-red-500/50'
-                    else style = 'glass-card border border-white/6 opacity-50'
+                    else style = 'glass-card border border-white/5 opacity-50'
                   }
                   return (
                     <button key={i} onClick={() => handleSelect(i)}
                       className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all duration-150 ${style} ${!answered ? 'cursor-pointer' : 'cursor-default'}`}>
                       <div className="flex items-center gap-3">
                         <span className={`w-6 h-6 rounded-lg border flex items-center justify-center text-xs font-bold flex-shrink-0
-                          ${answered && i === q.correct ? 'bg-emerald-DEFAULT border-emerald-DEFAULT text-white' :
+                          ${answered && i === q.correct ? 'bg-emerald border-emerald text-white' :
                             answered && i === selected && i !== q.correct ? 'bg-red-500 border-red-500 text-white' :
-                            'border-white/20 text-slate-DEFAULT'}`}>
+                            'border-white/20 text-slate'}`}>
                           {String.fromCharCode(65 + i)}
                         </span>
-                        <span className={answered && i === q.correct ? 'text-emerald-DEFAULT' :
+                        <span className={answered && i === q.correct ? 'text-emerald' :
                           answered && i === selected && i !== q.correct ? 'text-red-400' : 'text-white'}>
                           {opt}
                         </span>
-                        {answered && i === q.correct && <CheckCircle size={16} className="text-emerald-DEFAULT ml-auto" />}
+                        {answered && i === q.correct && <CheckCircle size={16} className="text-emerald ml-auto" />}
                       </div>
                     </button>
                   )
@@ -136,8 +136,8 @@ function QuizModal({ onClose, subject }) {
               {answered && (
                 <div className={`mt-4 rounded-xl p-4 border animate-slide-up text-sm
                   ${isCorrect
-                    ? 'bg-emerald-DEFAULT/10 border-emerald-DEFAULT/30 text-emerald-DEFAULT'
-                    : 'bg-orange-DEFAULT/10 border-orange-DEFAULT/30 text-orange-light'
+                    ? 'bg-emerald/10 border-emerald/30 text-emerald'
+                    : 'bg-orange/10 border-orange/30 text-orange-light'
                   }`}>
                   <p className="font-semibold mb-1">{isCorrect ? '✅ Correct! Well done.' : '🧠 Socratic Insight:'}</p>
                   <p className="text-slate-light leading-relaxed">{q.explanation}</p>
@@ -158,16 +158,16 @@ function QuizModal({ onClose, subject }) {
                     <Trophy size={36} className="text-yellow-400" />
                   </div>
                   <h3 className="text-2xl font-extrabold text-white mb-1">Quiz Complete!</h3>
-                  <p className="text-slate-DEFAULT">You scored {score}/{questions.length} ({pct}%)</p>
+                  <p className="text-slate">You scored {score}/{questions.length} ({pct}%)</p>
                 </div>
               )}
               {/* XP reward popup */}
-              <div className="glass-card rounded-2xl border border-orange-DEFAULT/30 p-4 mb-4 animate-slide-up">
+              <div className="glass-card rounded-2xl border border-orange/30 p-4 mb-4 animate-slide-up">
                 <div className="flex items-center justify-center gap-3">
                   <Star size={24} className="text-yellow-400" />
                   <div>
                     <p className="text-xl font-extrabold text-white">+{score * 25} XP Earned!</p>
-                    <p className="text-xs text-slate-DEFAULT">{pct >= 80 ? '🔥 Excellent! Bonus XP awarded.' : 'Keep practicing to unlock bonus XP!'}</p>
+                    <p className="text-xs text-slate">{pct >= 80 ? '🔥 Excellent! Bonus XP awarded.' : 'Keep practicing to unlock bonus XP!'}</p>
                   </div>
                 </div>
               </div>
@@ -201,25 +201,25 @@ function RoadmapNode({ node, index, onQuiz }) {
 
       {/* Node dot */}
       <div className={`relative z-10 w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border-2 transition-all duration-200
-        ${node.done     ? 'bg-emerald-DEFAULT/20 border-emerald-DEFAULT shadow-[0_0_12px_rgba(16,185,129,0.3)]' :
-          isActive       ? 'bg-orange-DEFAULT/20 border-orange-DEFAULT shadow-orange-glow animate-pulse-slow' :
+        ${node.done     ? 'bg-emerald/20 border-emerald shadow-[0_0_12px_rgba(16,185,129,0.3)]' :
+          isActive       ? 'bg-orange/20 border-orange shadow-orange-glow animate-pulse-slow' :
                            'bg-navy-light border-white/10 opacity-50'}`}>
         {node.done
-          ? <CheckCircle size={18} className="text-emerald-DEFAULT" />
+          ? <CheckCircle size={18} className="text-emerald" />
           : isActive
-            ? <Play size={16} className="text-orange-DEFAULT" />
-            : <Lock size={14} className="text-slate-DEFAULT" />}
+            ? <Play size={16} className="text-orange" />
+            : <Lock size={14} className="text-slate" />}
       </div>
 
       {/* Card */}
       <div className={`flex-1 glass-card rounded-xl px-4 py-3 border transition-all duration-200 cursor-pointer mb-2
-        ${node.done     ? 'border-emerald-DEFAULT/20 hover:border-emerald-DEFAULT/40' :
-          isActive       ? 'border-orange-DEFAULT/30 hover:border-orange-DEFAULT/50 bg-orange-DEFAULT/5' :
-                           'border-white/6 opacity-50 cursor-not-allowed'}`}
+        ${node.done     ? 'border-emerald/20 hover:border-emerald/40' :
+          isActive       ? 'border-orange/30 hover:border-orange/50 bg-orange/5' :
+                           'border-white/5 opacity-50 cursor-not-allowed'}`}
         onClick={() => isActive && onQuiz()}>
         <div className="flex items-center justify-between">
           <div>
-            <p className={`text-sm font-semibold ${node.done ? 'text-slate-DEFAULT' : isActive ? 'text-white' : 'text-slate-DEFAULT/60'}`}>
+            <p className={`text-sm font-semibold ${node.done ? 'text-slate' : isActive ? 'text-white' : 'text-slate/60'}`}>
               {node.title}
             </p>
             <span className="text-xs capitalize mt-0.5 inline-block"
@@ -230,10 +230,10 @@ function RoadmapNode({ node, index, onQuiz }) {
           {isActive && (
             <div className="flex items-center gap-1.5">
               <span className="badge-xp text-xs">+25 XP</span>
-              <ChevronRight size={14} className="text-orange-DEFAULT" />
+              <ChevronRight size={14} className="text-orange" />
             </div>
           )}
-          {node.done && <CheckCircle size={14} className="text-emerald-DEFAULT" />}
+          {node.done && <CheckCircle size={14} className="text-emerald" />}
         </div>
       </div>
     </div>
@@ -249,7 +249,7 @@ function PathCard({ path, onSelect, selected }) {
     <button
       onClick={() => onSelect(path.id)}
       className={`glass-card glass-card-hover rounded-2xl p-4 border transition-all duration-200 text-left w-full
-        ${isSelected ? 'border-orange-DEFAULT/40 bg-orange-DEFAULT/8 ring-orange-glow' : 'border-white/8'}`}
+        ${isSelected ? 'border-orange/40 bg-orange/10 ring-orange-glow' : 'border-white/10'}`}
     >
       <div className="flex items-start gap-3 mb-3">
         <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
@@ -258,11 +258,11 @@ function PathCard({ path, onSelect, selected }) {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-bold text-sm text-white leading-tight">{path.title}</p>
-          <p className="text-xs text-slate-DEFAULT">{path.description}</p>
+          <p className="text-xs text-slate">{path.description}</p>
         </div>
-        {isSelected && <div className="w-2 h-2 bg-orange-DEFAULT rounded-full flex-shrink-0 mt-1" />}
+        {isSelected && <div className="w-2 h-2 bg-orange rounded-full flex-shrink-0 mt-1" />}
       </div>
-      <div className="flex justify-between text-xs text-slate-DEFAULT mb-1.5">
+      <div className="flex justify-between text-xs text-slate mb-1.5">
         <span>{path.completedNodes}/{path.totalNodes} nodes</span>
         <span style={{ color: path.color }}>{pct}%</span>
       </div>
@@ -292,7 +292,7 @@ export default function LearnScreen({ onNavigate, onStartLesson }) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-extrabold text-white tracking-tight">Learning Paths</h1>
-          <p className="text-slate-DEFAULT text-sm mt-0.5">Choose your track and follow the roadmap</p>
+          <p className="text-slate text-sm mt-0.5">Choose your track and follow the roadmap</p>
         </div>
         <button onClick={() => openQuiz(selectedPath)}
           className="btn-primary flex items-center gap-2">
@@ -309,18 +309,18 @@ export default function LearnScreen({ onNavigate, onStartLesson }) {
 
       {/* Roadmap for selected path */}
       {activePath && (
-        <div className="glass-card rounded-2xl border border-white/8 p-5">
+        <div className="glass-card rounded-2xl border border-white/10 p-5">
           <div className="flex items-center gap-3 mb-5">
             <span className="text-2xl">{activePath.icon}</span>
             <div>
               <h2 className="text-lg font-extrabold text-white">{activePath.title} Roadmap</h2>
-              <p className="text-xs text-slate-DEFAULT">{activePath.completedNodes} of {activePath.totalNodes} topics completed</p>
+              <p className="text-xs text-slate">{activePath.completedNodes} of {activePath.totalNodes} topics completed</p>
             </div>
             <div className="ml-auto flex items-center gap-2">
-              <div className="hidden sm:flex items-center gap-3 text-xs text-slate-DEFAULT">
+              <div className="hidden sm:flex items-center gap-3 text-xs text-slate">
                 {[
-                  { color: 'bg-emerald-DEFAULT', label: 'Done' },
-                  { color: 'bg-orange-DEFAULT', label: 'Active' },
+                  { color: 'bg-emerald', label: 'Done' },
+                  { color: 'bg-orange', label: 'Active' },
                   { color: 'bg-white/20', label: 'Locked' },
                 ].map(({ color, label }) => (
                   <div key={label} className="flex items-center gap-1.5">
@@ -351,7 +351,7 @@ export default function LearnScreen({ onNavigate, onStartLesson }) {
           </div>
 
           {/* Overall progress */}
-          <div className="mt-6 pt-4 border-t border-white/8">
+          <div className="mt-6 pt-4 border-t border-white/10">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm font-semibold text-white">Overall Progress</span>
               <span className="text-sm font-bold" style={{ color: activePath.color }}>

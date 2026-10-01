@@ -12,14 +12,16 @@ import { useHydrated } from '@/lib/useHydrated'
 // Screen ids used across the app (onNavigate('tutor'), etc.) mapped to paths,
 // plus which bottom-nav / sidebar tab each path highlights.
 //
-// Note: `quests` highlights the Game tab and `community` highlights the Other
-// tab, mirroring the original imperative router in App.jsx.
+// Note: `quests` highlights the Game tab, `quiz` highlights Learn, and
+// `community` highlights the Other tab, mirroring the original imperative router
+// in App.jsx.
 export const ROUTES = {
   home:      { path: '/',          navTab: 'home' },
   tutor:     { path: '/tutor',     navTab: 'tutor' },
   learn:     { path: '/learn',     navTab: 'learn' },
   quests:    { path: '/quests',    navTab: 'game' },
   game:      { path: '/game',      navTab: 'game' },
+  quiz:      { path: '/quiz',      navTab: 'learn' },
   community: { path: '/community', navTab: 'other' },
   other:     { path: '/other',     navTab: 'other' },
 }

@@ -40,7 +40,7 @@ export function AuthProvider({ children }) {
     }
     const { data, error } = await supabase
       .from('users')
-      .select('id,name,username,avatar_url,xp,level,xp_to_next,streak,lives,max_lives,gems,keys,daily_goal_progress,socratic_mode,active_lang')
+      .select('id,name,username,avatar_url,xp,level,xp_to_next,streak,lives,max_lives,gems,keys,daily_goal_progress,socratic_mode,active_lang,is_certified')
       .eq('id', userId)
       .maybeSingle()
 

@@ -43,15 +43,15 @@ function StepWelcome({ onNext }) {
         and get industry-ready — one lesson at a time.
       </p>
       <div className="w-full space-y-3 max-w-xs">
-        <div className="glass-card rounded-xl border border-white/8 p-3 flex items-center gap-3 text-left">
+        <div className="glass-card rounded-xl border border-white/10 p-3 flex items-center gap-3 text-left">
           <span className="text-xl">🧠</span>
           <p className="text-xs text-[#94A3B8]"><span className="text-white font-semibold">Socratic AI</span> — learn by questioning, not memorising</p>
         </div>
-        <div className="glass-card rounded-xl border border-white/8 p-3 flex items-center gap-3 text-left">
+        <div className="glass-card rounded-xl border border-white/10 p-3 flex items-center gap-3 text-left">
           <span className="text-xl">🏆</span>
           <p className="text-xs text-[#94A3B8]"><span className="text-white font-semibold">Gamified</span> — XP, streaks, quests, achievements</p>
         </div>
-        <div className="glass-card rounded-xl border border-white/8 p-3 flex items-center gap-3 text-left">
+        <div className="glass-card rounded-xl border border-white/10 p-3 flex items-center gap-3 text-left">
           <span className="text-xl">🚀</span>
           <p className="text-xs text-[#94A3B8]"><span className="text-white font-semibold">Industry-ready</span> — Python, JavaScript, C++, DSA</p>
         </div>

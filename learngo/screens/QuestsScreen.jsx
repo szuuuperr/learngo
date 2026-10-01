@@ -53,7 +53,7 @@ const leaderboard = [
 
 const rankIcons = {
   1: <Crown size={14} className="text-yellow-400" />,
-  2: <Medal size={14} className="text-slate-DEFAULT" />,
+  2: <Medal size={14} className="text-slate" />,
   3: <Medal size={14} className="text-yellow-700" />,
 }
 
@@ -68,7 +68,7 @@ function LeaderboardRow({ entry }) {
       } : {}}
     >
       <div className={`w-6 text-center font-bold text-sm
-        ${entry.rank <= 3 ? 'text-yellow-400' : entry.isMe ? 'text-orange-DEFAULT' : 'text-slate-DEFAULT'}`}>
+        ${entry.rank <= 3 ? 'text-yellow-400' : entry.isMe ? 'text-orange' : 'text-slate'}`}>
         {rankIcons[entry.rank] || <span>{entry.rank}</span>}
       </div>
       <div
@@ -80,10 +80,10 @@ function LeaderboardRow({ entry }) {
         {entry.avatar}
       </div>
       <div className="flex-1 min-w-0">
-        <p className={`text-sm font-semibold ${entry.isMe ? 'text-orange-DEFAULT' : 'text-white'}`}>
+        <p className={`text-sm font-semibold ${entry.isMe ? 'text-orange' : 'text-white'}`}>
           {entry.name} {entry.isMe && <span className="text-xs" style={{ color: 'rgba(255,122,0,0.7)' }}>(you)</span>}
         </p>
-        <p className="text-xs text-slate-DEFAULT">Level {entry.level}</p>
+        <p className="text-xs text-slate">Level {entry.level}</p>
       </div>
       <div className="flex items-center gap-1">
         <Star size={12} className="text-yellow-400" />
@@ -106,12 +106,12 @@ const achievements = [
 function AchievementBadge({ a }) {
   return (
     <div className={`glass-card rounded-2xl p-4 border text-center transition-all duration-200
-      ${a.unlocked ? 'border-yellow-400/25 bg-yellow-400/5 hover:border-yellow-400/40' : 'border-white/8 opacity-50'}`}>
+      ${a.unlocked ? 'border-yellow-400/25 bg-yellow-400/5 hover:border-yellow-400/40' : 'border-white/10 opacity-50'}`}>
       <div className={`text-3xl mb-2 ${!a.unlocked ? 'grayscale' : ''}`}>{a.icon}</div>
-      <p className={`text-xs font-bold ${a.unlocked ? 'text-white' : 'text-slate-DEFAULT'}`}>{a.title}</p>
-      <p className="text-xs text-slate-DEFAULT mt-0.5">{a.desc}</p>
+      <p className={`text-xs font-bold ${a.unlocked ? 'text-white' : 'text-slate'}`}>{a.title}</p>
+      <p className="text-xs text-slate mt-0.5">{a.desc}</p>
       {a.unlocked && <span className="badge-xp mt-2 inline-block">+{a.xp} XP</span>}
-      {!a.unlocked && <Lock size={12} className="mx-auto mt-2 text-slate-DEFAULT/50" />}
+      {!a.unlocked && <Lock size={12} className="mx-auto mt-2 text-slate/50" />}
     </div>
   )
 }
@@ -131,37 +131,37 @@ function QuestCard({ quest }) {
 
   return (
     <div className={`glass-card glass-card-hover rounded-2xl p-4 border transition-all duration-200
-      ${done ? 'border-emerald-DEFAULT/25 bg-emerald-DEFAULT/5' : 'border-white/8'}`}>
+      ${done ? 'border-emerald/25 bg-emerald/5' : 'border-white/10'}`}>
       <div className="flex items-start gap-3 mb-3">
-        <div className="w-10 h-10 rounded-xl bg-navy border border-white/8 flex items-center justify-center text-xl flex-shrink-0">
+        <div className="w-10 h-10 rounded-xl bg-navy border border-white/10 flex items-center justify-center text-xl flex-shrink-0">
           {quest.icon}
         </div>
         <div className="flex-1">
           <div className="flex items-start justify-between gap-2">
             <p className="font-bold text-sm text-white leading-tight">{quest.title}</p>
-            {done && <CheckCircle size={16} className="text-emerald-DEFAULT flex-shrink-0" />}
+            {done && <CheckCircle size={16} className="text-emerald flex-shrink-0" />}
           </div>
-          <p className="text-xs text-slate-DEFAULT mt-0.5">{quest.description}</p>
+          <p className="text-xs text-slate mt-0.5">{quest.description}</p>
         </div>
       </div>
 
       <div className="flex items-center gap-2 mb-3 flex-wrap">
         <span className={`tag-pill text-xs border ${
           quest.difficultyColor === 'emerald'
-            ? 'bg-emerald-DEFAULT/15 text-emerald-DEFAULT border-emerald-DEFAULT/30'
-            : 'bg-orange-DEFAULT/15 text-orange-light border-orange-DEFAULT/30'
+            ? 'bg-emerald/15 text-emerald border-emerald/30'
+            : 'bg-orange/15 text-orange-light border-orange/30'
         }`}>{quest.difficulty}</span>
-        <span className="tag-pill bg-navy-light text-slate-DEFAULT text-xs">{quest.category}</span>
+        <span className="tag-pill bg-navy-light text-slate text-xs">{quest.category}</span>
         <span className="badge-xp ml-auto">+{quest.xp} XP</span>
       </div>
 
       {quest.total > 0 && (
         <div className="mb-3">
-          <div className="flex justify-between text-xs text-slate-DEFAULT mb-1">
+          <div className="flex justify-between text-xs text-slate mb-1">
             <span>{quest.progress}/{quest.total}</span><span>{pct}%</span>
           </div>
           <div className="h-1.5 bg-navy rounded-full overflow-hidden">
-            <div className={`h-full rounded-full ${done ? 'bg-emerald-DEFAULT' : 'bg-orange-DEFAULT'}`}
+            <div className={`h-full rounded-full ${done ? 'bg-emerald' : 'bg-orange'}`}
               style={{ width: `${done ? 100 : pct}%` }} />
           </div>
         </div>
@@ -173,7 +173,7 @@ function QuestCard({ quest }) {
           <Play size={14} /> Start Quest
         </button>
       ) : (
-        <div className="flex items-center justify-center gap-2 py-2 text-emerald-DEFAULT text-sm font-semibold">
+        <div className="flex items-center justify-center gap-2 py-2 text-emerald text-sm font-semibold">
           <CheckCircle size={14} /> Completed!
         </div>
       )}
@@ -189,9 +189,9 @@ function StreakCalendar() {
   const studied = [true, true, true, false, true, true, true]
 
   return (
-    <div className="glass-card rounded-2xl border border-white/8 p-4">
+    <div className="glass-card rounded-2xl border border-white/10 p-4">
       <div className="flex items-center gap-2 mb-3">
-        <Flame size={16} className="text-orange-DEFAULT" />
+        <Flame size={16} className="text-orange" />
         <span className="text-sm font-bold text-white">This Week&apos;s Streak</span>
         <span className="badge-xp ml-auto">{streak} days 🔥</span>
       </div>
@@ -210,10 +210,10 @@ function StreakCalendar() {
               }}
             >
               {studied[i]
-                ? <Flame size={16} className="text-orange-DEFAULT" />
+                ? <Flame size={16} className="text-orange" />
                 : <div className="w-1.5 h-1.5 bg-white/20 rounded-full" />}
             </div>
-            <span className="text-xs text-slate-DEFAULT">{d}</span>
+            <span className="text-xs text-slate">{d}</span>
           </div>
         ))}
       </div>
@@ -229,28 +229,28 @@ export default function QuestsScreen() {
   return (
     <div className="animate-fade-in space-y-5">
       {/* Header + XP Ring */}
-      <div className="glass-card rounded-2xl border border-white/8 p-5 relative overflow-hidden"
+      <div className="glass-card rounded-2xl border border-white/10 p-5 relative overflow-hidden"
         style={{ background: 'linear-gradient(135deg, rgba(255,122,0,0.08) 0%, rgba(6,182,212,0.04) 100%)' }}>
         <div className="absolute -right-8 -top-8 w-40 h-40 rounded-full blur-3xl pointer-events-none"
           style={{ background: 'rgba(255,122,0,0.06)' }} />
         <div className="flex items-center gap-5">
           <XPRing xp={xp} xpToNext={xpToNext} level={level} />
           <div className="flex-1">
-            <p className="text-xs text-slate-DEFAULT uppercase tracking-widest mb-0.5">Rank Progress</p>
+            <p className="text-xs text-slate uppercase tracking-widest mb-0.5">Rank Progress</p>
             <h2 className="text-xl font-extrabold text-white">Level {level} — Apprentice</h2>
             <div className="mt-2">
-              <div className="flex justify-between text-xs text-slate-DEFAULT mb-1">
+              <div className="flex justify-between text-xs text-slate mb-1">
                 <span>{xp} XP</span>
                 <span>{xpToNext} XP next level</span>
               </div>
               <div className="h-2 bg-navy rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-orange-DEFAULT to-yellow-400 rounded-full"
+                <div className="h-full bg-gradient-to-r from-orange to-yellow-400 rounded-full"
                   style={{ width: `${(xp / xpToNext) * 100}%` }} />
               </div>
             </div>
             <div className="flex gap-2 mt-3 flex-wrap">
               {user.badges.map(b => (
-                <span key={b} className="text-xs glass-card border border-white/10 px-2.5 py-1 rounded-full text-slate-DEFAULT">{b}</span>
+                <span key={b} className="text-xs glass-card border border-white/10 px-2.5 py-1 rounded-full text-slate">{b}</span>
               ))}
             </div>
           </div>
@@ -261,7 +261,7 @@ export default function QuestsScreen() {
       <StreakCalendar />
 
       {/* Tab switcher */}
-      <div className="flex glass-card rounded-xl border border-white/8 p-0.5 gap-0.5">
+      <div className="flex glass-card rounded-xl border border-white/10 p-0.5 gap-0.5">
         {[
           { id: 'quests',       label: '⚡ Daily Quests' },
           { id: 'leaderboard',  label: '🏆 Leaderboard' },
@@ -269,7 +269,7 @@ export default function QuestsScreen() {
         ].map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
             className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all duration-150
-              ${tab === t.id ? 'bg-orange-DEFAULT text-white' : 'text-slate-DEFAULT hover:text-white'}`}
+              ${tab === t.id ? 'bg-orange text-white' : 'text-slate hover:text-white'}`}
             style={tab === t.id ? { boxShadow: '0 0 12px rgba(255,122,0,0.25)' } : {}}>
             {t.label}
           </button>
@@ -284,17 +284,17 @@ export default function QuestsScreen() {
       )}
 
       {tab === 'leaderboard' && (
-        <div className="glass-card rounded-2xl border border-white/8 overflow-hidden">
-          <div className="px-4 py-3 border-b border-white/8 flex items-center gap-2">
+        <div className="glass-card rounded-2xl border border-white/10 overflow-hidden">
+          <div className="px-4 py-3 border-b border-white/10 flex items-center gap-2">
             <Trophy size={16} className="text-yellow-400" />
             <span className="font-bold text-white text-sm">Weekly Leaderboard</span>
-            <span className="text-xs text-slate-DEFAULT ml-auto">Resets in 2d 14h</span>
+            <span className="text-xs text-slate ml-auto">Resets in 2d 14h</span>
           </div>
           <div className="p-2 space-y-1">
             {leaderboard.map(e => <LeaderboardRow key={e.rank} entry={e} />)}
           </div>
           <div className="px-4 pb-3 pt-1 text-center">
-            <p className="text-xs text-slate-DEFAULT">You are in the <span className="text-orange-DEFAULT font-semibold">Top 20%</span> this week. Keep going!</p>
+            <p className="text-xs text-slate">You are in the <span className="text-orange font-semibold">Top 20%</span> this week. Keep going!</p>
           </div>
         </div>
       )}
@@ -304,7 +304,7 @@ export default function QuestsScreen() {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {achievements.map(a => <AchievementBadge key={a.id} a={a} />)}
           </div>
-          <p className="text-xs text-center text-slate-DEFAULT mt-3">
+          <p className="text-xs text-center text-slate mt-3">
             {achievements.filter(a => a.unlocked).length}/{achievements.length} achievements unlocked
           </p>
         </div>

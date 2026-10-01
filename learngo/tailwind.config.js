@@ -12,13 +12,21 @@ module.exports = {
   ],
   theme: {
     extend: {
+      // Written as `rgb(R G B / <alpha-value>)` rather than hex so the opacity
+      // modifier works: `bg-emerald/40` needs a colour with an alpha channel.
+      // With a plain hex value Tailwind cannot resolve the alpha and silently
+      // drops every `/NN` variant.
+      //
+      // `DEFAULT` is a config key, not part of a class name. These are used as
+      // `bg-orange`, `text-emerald`, `bg-slate/60` - never `bg-orange-DEFAULT`,
+      // which is not a valid utility and generates no CSS at all.
       colors: {
-        obsidian:   { DEFAULT: '#0F172A', 800: '#131B2E' },
-        navy:       { DEFAULT: '#1E293B', light: '#24304A', deep: '#0F172A' },
-        orange:     { DEFAULT: '#FF7A00', light: '#F97316', glow: '#FF9A40' },
-        emerald:    { DEFAULT: '#10B981' },
-        cyan:       { DEFAULT: '#06B6D4' },
-        slate:      { DEFAULT: '#94A3B8', light: '#CBD5E1' },
+        obsidian:   { DEFAULT: 'rgb(15 23 42 / <alpha-value>)',  800: 'rgb(19 27 46 / <alpha-value>)' },
+        navy:       { DEFAULT: 'rgb(30 41 59 / <alpha-value>)',  light: 'rgb(36 48 74 / <alpha-value>)', deep: 'rgb(15 23 42 / <alpha-value>)' },
+        orange:     { DEFAULT: 'rgb(255 122 0 / <alpha-value>)', light: 'rgb(249 115 22 / <alpha-value>)', glow: 'rgb(255 154 64 / <alpha-value>)' },
+        emerald:    { DEFAULT: 'rgb(16 185 129 / <alpha-value>)' },
+        cyan:       { DEFAULT: 'rgb(6 182 212 / <alpha-value>)' },
+        slate:      { DEFAULT: 'rgb(148 163 184 / <alpha-value>)', light: 'rgb(203 213 225 / <alpha-value>)' },
       },
       fontFamily: {
         sans: ['var(--font-jakarta)', 'Inter', 'system-ui', 'sans-serif'],

@@ -12,7 +12,7 @@ function AuthInput({ icon: Icon, placeholder, type = 'text', value, onChange, to
 
   return (
     <div className="relative">
-      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-DEFAULT">
+      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate">
         <Icon size={16} />
       </div>
       <input
@@ -26,7 +26,7 @@ function AuthInput({ icon: Icon, placeholder, type = 'text', value, onChange, to
         <button
           type="button"
           onClick={() => setShow(s => !s)}
-          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-DEFAULT hover:text-white transition-colors"
+          className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate hover:text-white transition-colors"
         >
           {show ? <EyeOff size={15} /> : <Eye size={15} />}
         </button>
@@ -111,28 +111,28 @@ export function AuthModal({ onClose, onSuccess }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian/85 backdrop-blur-sm animate-fade-in">
       <div className="w-full max-w-md glass-card rounded-3xl border border-white/10 overflow-hidden shadow-card animate-slide-up">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-white/8">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-orange-DEFAULT rounded-xl flex items-center justify-center shadow-orange-glow">
+            <div className="w-9 h-9 bg-orange rounded-xl flex items-center justify-center shadow-orange-glow">
               <FoxMascot size={22} />
             </div>
             <div>
-              <span className="font-extrabold text-white text-lg">Learn<span className="text-orange-DEFAULT">Go</span></span>
-              <p className="text-xs text-slate-DEFAULT leading-none mt-0.5">AI Companion for CS</p>
+              <span className="font-extrabold text-white text-lg">Learn<span className="text-orange">Go</span></span>
+              <p className="text-xs text-slate leading-none mt-0.5">AI Companion for CS</p>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-DEFAULT hover:text-white transition-colors p-1.5 rounded-xl hover:bg-white/8">
+          <button onClick={onClose} className="text-slate hover:text-white transition-colors p-1.5 rounded-xl hover:bg-white/10">
             <X size={18} />
           </button>
         </div>
 
         <div className="px-6 py-6">
           {/* Mode switcher */}
-          <div className="flex glass-card rounded-xl border border-white/8 p-0.5 gap-0.5 mb-6">
+          <div className="flex glass-card rounded-xl border border-white/10 p-0.5 gap-0.5 mb-6">
             {['login', 'register'].map(m => (
               <button key={m} onClick={() => setMode(m)}
                 className={`flex-1 py-2 rounded-lg text-xs font-semibold capitalize transition-all duration-150
-                  ${mode === m ? 'bg-orange-DEFAULT text-white' : 'text-slate-DEFAULT hover:text-white'}`}>
+                  ${mode === m ? 'bg-orange text-white' : 'text-slate hover:text-white'}`}>
                 {m === 'login' ? '🔑 Sign In' : '🚀 Create Account'}
               </button>
             ))}
@@ -147,7 +147,7 @@ export function AuthModal({ onClose, onSuccess }) {
 
             {mode === 'login' && (
               <div className="text-right">
-                <button type="button" className="text-xs text-orange-DEFAULT hover:text-orange-glow transition-colors">
+                <button type="button" className="text-xs text-orange hover:text-orange-glow transition-colors">
                   Forgot password?
                 </button>
               </div>
@@ -159,7 +159,7 @@ export function AuthModal({ onClose, onSuccess }) {
               </p>
             )}
             {notice && (
-              <p role="status" className="text-xs text-slate-DEFAULT bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+              <p role="status" className="text-xs text-slate bg-white/5 border border-white/10 rounded-xl px-3 py-2">
                 {notice}
               </p>
             )}
@@ -179,9 +179,9 @@ export function AuthModal({ onClose, onSuccess }) {
 
           {/* Divider */}
           <div className="flex items-center gap-3 my-4">
-            <div className="flex-1 h-px bg-white/8" />
-            <span className="text-xs text-slate-DEFAULT">or continue with</span>
-            <div className="flex-1 h-px bg-white/8" />
+            <div className="flex-1 h-px bg-white/10" />
+            <span className="text-xs text-slate">or continue with</span>
+            <div className="flex-1 h-px bg-white/10" />
           </div>
 
           <button
@@ -195,10 +195,10 @@ export function AuthModal({ onClose, onSuccess }) {
               : <><GoogleIcon /> <span className="text-xs font-semibold">Continue with Google</span></>}
           </button>
 
-          <p className="text-xs text-center text-slate-DEFAULT mt-5 leading-relaxed">
+          <p className="text-xs text-center text-slate mt-5 leading-relaxed">
             {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
             <button onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
-              className="text-orange-DEFAULT hover:text-orange-glow font-semibold transition-colors">
+              className="text-orange hover:text-orange-glow font-semibold transition-colors">
               {mode === 'login' ? 'Sign up free' : 'Sign in'}
             </button>
           </p>
@@ -218,7 +218,7 @@ export function LogoutModal({ onClose, onConfirm }) {
             <LogOut size={26} className="text-red-400" />
           </div>
           <h3 className="text-lg font-extrabold text-white mb-1">Log Out?</h3>
-          <p className="text-sm text-slate-DEFAULT leading-relaxed">
+          <p className="text-sm text-slate leading-relaxed">
             Your streak and progress are saved. You can sign back in anytime.
           </p>
           <div className="flex gap-3 mt-6">

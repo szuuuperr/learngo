@@ -24,16 +24,16 @@ function CodeBlock({ code, language = 'python' }) {
 
   return (
     <div className="code-block my-2 group">
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/8">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/10">
         <div className="flex items-center gap-2">
-          <Code2 size={14} className="text-cyan-DEFAULT" />
-          <span className="text-xs text-slate-DEFAULT font-mono font-medium">{language}</span>
+          <Code2 size={14} className="text-cyan" />
+          <span className="text-xs text-slate font-mono font-medium">{language}</span>
         </div>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1.5 text-xs text-slate-DEFAULT hover:text-white transition-colors px-2 py-1 rounded-lg hover:bg-white/8"
+          className="flex items-center gap-1.5 text-xs text-slate hover:text-white transition-colors px-2 py-1 rounded-lg hover:bg-white/10"
         >
-          {copied ? <Check size={12} className="text-emerald-DEFAULT" /> : <Copy size={12} />}
+          {copied ? <Check size={12} className="text-emerald" /> : <Copy size={12} />}
           {copied ? 'Copied!' : 'Copy'}
         </button>
       </div>
@@ -41,8 +41,8 @@ function CodeBlock({ code, language = 'python' }) {
         <table className="w-full border-collapse text-xs">
           <tbody>
             {lines.map((line, i) => (
-              <tr key={i} className="hover:bg-white/4 group/line transition-colors">
-                <td className="select-none text-right pr-4 pl-4 py-0.5 text-slate-DEFAULT/40 font-mono w-8 border-r border-white/5">
+              <tr key={i} className="hover:bg-white/5 group/line transition-colors">
+                <td className="select-none text-right pr-4 pl-4 py-0.5 text-slate/40 font-mono w-8 border-r border-white/5">
                   {i + 1}
                 </td>
                 <td className="pl-4 pr-4 py-0.5 font-mono text-slate-light whitespace-pre">
@@ -73,7 +73,7 @@ function MessageBubble({ msg, mode }) {
         return <CodeBlock key={i} code={code.trim()} language={lang || 'python'} />
       }
       if (part.startsWith('`') && part.endsWith('`')) {
-        return <code key={i} className="bg-navy text-cyan-DEFAULT px-1.5 py-0.5 rounded-md font-mono text-xs">{part.slice(1,-1)}</code>
+        return <code key={i} className="bg-navy text-cyan px-1.5 py-0.5 rounded-md font-mono text-xs">{part.slice(1,-1)}</code>
       }
       if (part.startsWith('**') && part.endsWith('**')) {
         return <strong key={i} className="text-white font-semibold">{part.slice(2,-2)}</strong>
@@ -86,12 +86,12 @@ function MessageBubble({ msg, mode }) {
     return (
       <div className="flex justify-end gap-3 animate-slide-up">
         <div className="max-w-[80%]">
-          <div className="bg-orange-DEFAULT/20 border border-orange-DEFAULT/30 text-white rounded-2xl rounded-tr-sm px-4 py-3 text-sm leading-relaxed">
+          <div className="bg-orange/20 border border-orange/30 text-white rounded-2xl rounded-tr-sm px-4 py-3 text-sm leading-relaxed">
             {msg.content}
           </div>
-          <p className="text-right text-xs text-slate-DEFAULT/50 mt-1">{msg.time}</p>
+          <p className="text-right text-xs text-slate/50 mt-1">{msg.time}</p>
         </div>
-        <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-orange-DEFAULT to-orange-glow flex items-center justify-center text-xs font-bold text-white flex-shrink-0 mt-1 shadow-orange-glow/40">
+        <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-orange to-orange-glow flex items-center justify-center text-xs font-bold text-white flex-shrink-0 mt-1 shadow-orange-glow/40">
           {user.name[0]}
         </div>
       </div>
@@ -100,18 +100,18 @@ function MessageBubble({ msg, mode }) {
 
   return (
     <div className="flex gap-3 animate-slide-up">
-      <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-cyan-DEFAULT to-emerald-DEFAULT flex items-center justify-center flex-shrink-0 mt-1 shadow-cyan-glow">
+      <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-cyan to-emerald flex items-center justify-center flex-shrink-0 mt-1 shadow-cyan-glow">
         <Bot size={14} className="text-white" />
       </div>
       <div className="max-w-[85%]">
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-semibold text-cyan-DEFAULT">LearnGo AI</span>
-          <span className="text-xs text-slate-DEFAULT/40">{mode} Mode</span>
+          <span className="text-xs font-semibold text-cyan">LearnGo AI</span>
+          <span className="text-xs text-slate/40">{mode} Mode</span>
         </div>
-        <div className="glass-card border border-white/8 text-slate-light rounded-2xl rounded-tl-sm px-4 py-3 text-sm leading-relaxed">
+        <div className="glass-card border border-white/10 text-slate-light rounded-2xl rounded-tl-sm px-4 py-3 text-sm leading-relaxed">
           {renderContent(msg.content)}
         </div>
-        <p className="text-xs text-slate-DEFAULT/50 mt-1">{msg.time}</p>
+        <p className="text-xs text-slate/50 mt-1">{msg.time}</p>
       </div>
     </div>
   )
@@ -156,15 +156,15 @@ function PDFUploadZone({ onUpload, onError }) {
 
   if (uploaded) {
     return (
-      <div className="rounded-2xl border border-emerald-DEFAULT/30 bg-emerald-DEFAULT/8 p-4 flex items-center gap-3 animate-fade-in">
-        <div className="w-10 h-10 bg-emerald-DEFAULT/20 rounded-xl flex items-center justify-center">
-          <FileText size={20} className="text-emerald-DEFAULT" />
+      <div className="rounded-2xl border border-emerald/30 bg-emerald/10 p-4 flex items-center gap-3 animate-fade-in">
+        <div className="w-10 h-10 bg-emerald/20 rounded-xl flex items-center justify-center">
+          <FileText size={20} className="text-emerald" />
         </div>
         <div className="flex-1">
           <p className="text-sm font-semibold text-white truncate">{uploaded}</p>
-          <p className="text-xs text-emerald-DEFAULT">✓ Parsed & summarized by AI</p>
+          <p className="text-xs text-emerald">✓ Parsed & summarized by AI</p>
         </div>
-        <button onClick={() => setUploaded(null)} className="text-slate-DEFAULT hover:text-white transition-colors">
+        <button onClick={() => setUploaded(null)} className="text-slate hover:text-white transition-colors">
           <X size={16} />
         </button>
       </div>
@@ -179,25 +179,25 @@ function PDFUploadZone({ onUpload, onError }) {
       onClick={() => inputRef.current?.click()}
       className={`rounded-2xl border-2 border-dashed transition-all duration-200 p-5 text-center cursor-pointer
         ${dragging
-          ? 'border-orange-DEFAULT bg-orange-DEFAULT/10'
-          : 'border-white/15 hover:border-orange-DEFAULT/40 hover:bg-orange-DEFAULT/5'
+          ? 'border-orange bg-orange/10'
+          : 'border-white/15 hover:border-orange/40 hover:bg-orange/5'
         }`}
     >
       <input ref={inputRef} type="file" accept=".pdf" className="hidden"
         onChange={e => e.target.files[0] && processFile(e.target.files[0])} />
       {uploading ? (
         <div className="flex flex-col items-center gap-2">
-          <Loader size={24} className="text-cyan-DEFAULT animate-spin" />
-          <p className="text-sm text-slate-DEFAULT">Uploading and reading your PDF…</p>
-          <p className="text-xs text-slate-DEFAULT/60">Large modules can take a minute</p>
+          <Loader size={24} className="text-cyan animate-spin" />
+          <p className="text-sm text-slate">Uploading and reading your PDF…</p>
+          <p className="text-xs text-slate/60">Large modules can take a minute</p>
         </div>
       ) : (
         <div className="flex flex-col items-center gap-2">
           <div className="w-12 h-12 rounded-2xl bg-navy border border-white/10 flex items-center justify-center mb-1">
-            <Upload size={22} className="text-orange-DEFAULT" />
+            <Upload size={22} className="text-orange" />
           </div>
           <p className="text-sm font-semibold text-white">Drop your lecture PDF here</p>
-          <p className="text-xs text-slate-DEFAULT">or click to browse · PDF up to 50MB</p>
+          <p className="text-xs text-slate">or click to browse · PDF up to 50MB</p>
         </div>
       )}
     </div>
@@ -211,12 +211,12 @@ function AISummaryPanel({ summary, filename }) {
   return (
     <div className="space-y-3 animate-fade-in">
       <div className="flex items-center gap-2 mb-2 flex-wrap">
-        <Sparkles size={16} className="text-cyan-DEFAULT" />
+        <Sparkles size={16} className="text-cyan" />
         <p className="text-sm font-semibold text-white">
-          AI Summary of <span className="text-cyan-DEFAULT">{filename}</span>
+          AI Summary of <span className="text-cyan">{filename}</span>
         </p>
         {summary.pages != null && (
-          <span className="text-xs text-slate-DEFAULT/60">
+          <span className="text-xs text-slate/60">
             {summary.pages} page{summary.pages === 1 ? '' : 's'}
           </span>
         )}
@@ -225,8 +225,8 @@ function AISummaryPanel({ summary, filename }) {
       {/* A partial summary is still useful, but the user should know it is not
           the whole document rather than assuming it is. */}
       {(summary.partial || summary.skippedPages > 0) && (
-        <div className="glass-card rounded-xl border border-orange-DEFAULT/30 bg-orange-DEFAULT/8 px-3 py-2">
-          <p className="text-xs text-orange-DEFAULT leading-relaxed">
+        <div className="glass-card rounded-xl border border-orange/30 bg-orange/10 px-3 py-2">
+          <p className="text-xs text-orange leading-relaxed">
             {summary.skippedPages > 0
               ? `Partial summary: ${summary.skippedPages} later page${summary.skippedPages === 1 ? '' : 's'} were not read.`
               : 'Partial summary: one section could not be summarised.'}
@@ -234,19 +234,19 @@ function AISummaryPanel({ summary, filename }) {
         </div>
       )}
 
-      <div className="glass-card rounded-2xl border border-cyan-DEFAULT/20 p-4 space-y-2">
-        <p className="text-xs font-semibold text-cyan-DEFAULT uppercase tracking-widest">Key Concepts</p>
+      <div className="glass-card rounded-2xl border border-cyan/20 p-4 space-y-2">
+        <p className="text-xs font-semibold text-cyan uppercase tracking-widest">Key Concepts</p>
         {summary.points.map((point, i) => (
           <div key={i} className="flex gap-2.5 text-sm">
-            <div className="w-5 h-5 rounded-full bg-cyan-DEFAULT/15 text-cyan-DEFAULT text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">{i + 1}</div>
+            <div className="w-5 h-5 rounded-full bg-cyan/15 text-cyan text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">{i + 1}</div>
             <p className="text-slate-light leading-relaxed">{point}</p>
           </div>
         ))}
       </div>
 
       {summary.question && (
-        <div className="glass-card rounded-2xl border border-orange-DEFAULT/25 p-4">
-          <p className="text-xs font-semibold text-orange-DEFAULT uppercase tracking-widest mb-2">Quiz Question</p>
+        <div className="glass-card rounded-2xl border border-orange/25 p-4">
+          <p className="text-xs font-semibold text-orange uppercase tracking-widest mb-2">Quiz Question</p>
           <p className="text-sm text-slate-light leading-relaxed">{summary.question}</p>
         </div>
       )}
@@ -409,11 +409,11 @@ export default function AITutorScreen() {
       {/* Sub-header */}
       <div className="flex items-center gap-2 mb-3 flex-wrap">
         {/* Tab switcher */}
-        <div className="flex glass-card rounded-xl border border-white/8 p-0.5 gap-0.5">
+        <div className="flex glass-card rounded-xl border border-white/10 p-0.5 gap-0.5">
           {['chat', 'pdf'].map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all duration-150
-                ${activeTab === tab ? 'bg-orange-DEFAULT text-white shadow-orange-glow/30' : 'text-slate-DEFAULT hover:text-white'}`}>
+                ${activeTab === tab ? 'bg-orange text-white shadow-orange-glow/30' : 'text-slate hover:text-white'}`}>
               {tab === 'chat' ? '💬 Chat' : '📄 PDF Tools'}
             </button>
           ))}
@@ -422,8 +422,8 @@ export default function AITutorScreen() {
         {/* Mode selector */}
         <div className="relative ml-auto">
           <button onClick={() => setModeOpen(o => !o)}
-            className="flex items-center gap-2 glass-card border border-white/10 rounded-xl px-3 py-1.5 text-xs font-semibold text-white hover:border-orange-DEFAULT/30 transition-colors">
-            <Lightbulb size={13} className="text-orange-DEFAULT" />
+            className="flex items-center gap-2 glass-card border border-white/10 rounded-xl px-3 py-1.5 text-xs font-semibold text-white hover:border-orange/30 transition-colors">
+            <Lightbulb size={13} className="text-orange" />
             {mode} Mode <ChevronDown size={12} />
           </button>
           {modeOpen && (
@@ -433,7 +433,7 @@ export default function AITutorScreen() {
                 {MODES.map(m => (
                   <button key={m} onClick={() => { setMode(m); setModeOpen(false) }}
                     className={`w-full text-left px-3 py-2 text-xs font-medium transition-colors
-                      ${mode === m ? 'text-orange-DEFAULT bg-orange-DEFAULT/10' : 'text-slate-DEFAULT hover:text-white hover:bg-white/5'}`}>
+                      ${mode === m ? 'text-orange bg-orange/10' : 'text-slate hover:text-white hover:bg-white/5'}`}>
                     {m === 'Socratic' ? '🧠 Socratic (Guided Questions)' : '💡 Guided (Hints + Hints)'}
                   </button>
                 ))}
@@ -443,7 +443,7 @@ export default function AITutorScreen() {
         </div>
 
         {/* Reset */}
-        <button onClick={resetChat} className="p-1.5 rounded-xl text-slate-DEFAULT hover:text-white hover:bg-white/8 transition-colors" title="Reset chat">
+        <button onClick={resetChat} className="p-1.5 rounded-xl text-slate hover:text-white hover:bg-white/10 transition-colors" title="Reset chat">
           <RotateCcw size={14} />
         </button>
       </div>
@@ -453,9 +453,9 @@ export default function AITutorScreen() {
         <div className="mb-3 space-y-3">
           <PDFUploadZone onUpload={handlePDFUpload} onError={setToast} />
           {summarizing && (
-            <div className="glass-card rounded-2xl border border-white/8 px-4 py-3 flex items-center gap-3">
-              <Loader size={16} className="text-cyan-DEFAULT animate-spin" />
-              <p className="text-sm text-slate-DEFAULT">
+            <div className="glass-card rounded-2xl border border-white/10 px-4 py-3 flex items-center gap-3">
+              <Loader size={16} className="text-cyan animate-spin" />
+              <p className="text-sm text-slate">
                 Reading {uploadedFile} and building your summary…
               </p>
             </div>
@@ -471,7 +471,7 @@ export default function AITutorScreen() {
           <div className="flex flex-wrap gap-2 mt-1">
             {EXAMPLE_PROMPTS.map(p => (
               <button key={p} onClick={() => sendMessage(p)}
-                className="text-xs glass-card border border-white/10 hover:border-orange-DEFAULT/30 text-slate-DEFAULT hover:text-white rounded-xl px-3 py-1.5 transition-all duration-150">
+                className="text-xs glass-card border border-white/10 hover:border-orange/30 text-slate hover:text-white rounded-xl px-3 py-1.5 transition-all duration-150">
                 {p}
               </button>
             ))}
@@ -482,12 +482,12 @@ export default function AITutorScreen() {
 
         {loading && (
           <div className="flex gap-3 animate-slide-up">
-            <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-cyan-DEFAULT to-emerald-DEFAULT flex items-center justify-center flex-shrink-0">
+            <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-cyan to-emerald flex items-center justify-center flex-shrink-0">
               <Bot size={14} className="text-white" />
             </div>
-            <div className="glass-card border border-white/8 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1">
+            <div className="glass-card border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1">
               {[0, 1, 2].map(i => (
-                <div key={i} className="w-1.5 h-1.5 bg-cyan-DEFAULT rounded-full animate-bounce"
+                <div key={i} className="w-1.5 h-1.5 bg-cyan rounded-full animate-bounce"
                   style={{ animationDelay: `${i * 0.15}s` }} />
               ))}
             </div>
@@ -497,8 +497,8 @@ export default function AITutorScreen() {
       </div>
 
       {/* Input bar */}
-      <div className="mt-3 glass-card rounded-2xl border border-white/10 p-2 flex items-end gap-2 focus-within:border-orange-DEFAULT/30 transition-colors">
-        <button className="p-2 rounded-xl text-slate-DEFAULT hover:text-orange-DEFAULT transition-colors flex-shrink-0" title="Attach file"
+      <div className="mt-3 glass-card rounded-2xl border border-white/10 p-2 flex items-end gap-2 focus-within:border-orange/30 transition-colors">
+        <button className="p-2 rounded-xl text-slate hover:text-orange transition-colors flex-shrink-0" title="Attach file"
           onClick={() => setActiveTab('pdf')}>
           <Paperclip size={18} />
         </button>
@@ -509,13 +509,13 @@ export default function AITutorScreen() {
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage() } }}
           placeholder={`Ask a question in ${mode} mode… (Enter to send)`}
           rows={1}
-          className="flex-1 bg-transparent text-white text-sm placeholder-slate-DEFAULT/60 resize-none focus:outline-none leading-relaxed py-1.5 max-h-32 overflow-y-auto"
+          className="flex-1 bg-transparent text-white text-sm placeholder-slate/60 resize-none focus:outline-none leading-relaxed py-1.5 max-h-32 overflow-y-auto"
           style={{ minHeight: '36px' }}
         />
         <button
           onClick={() => sendMessage()}
           disabled={!input.trim() || loading}
-          className="p-2.5 rounded-xl bg-orange-DEFAULT hover:bg-orange-glow text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-shrink-0 shadow-orange-glow/40"
+          className="p-2.5 rounded-xl bg-orange hover:bg-orange-glow text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all flex-shrink-0 shadow-orange-glow/40"
         >
           <Send size={16} />
         </button>

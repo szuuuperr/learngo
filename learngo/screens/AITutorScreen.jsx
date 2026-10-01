@@ -58,7 +58,7 @@ function CodeBlock({ code, language = 'python' }) {
 }
 
 // ─── Chat Message Bubble ────────────────────────────────────────────────────
-function MessageBubble({ msg }) {
+function MessageBubble({ msg, mode }) {
   const isUser = msg.role === 'user'
 
   const renderContent = (content) => {
@@ -106,7 +106,7 @@ function MessageBubble({ msg }) {
       <div className="max-w-[85%]">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-xs font-semibold text-cyan-DEFAULT">LearnGo AI</span>
-          <span className="text-xs text-slate-DEFAULT/40">Socratic Mode</span>
+          <span className="text-xs text-slate-DEFAULT/40">{mode} Mode</span>
         </div>
         <div className="glass-card border border-white/8 text-slate-light rounded-2xl rounded-tl-sm px-4 py-3 text-sm leading-relaxed">
           {renderContent(msg.content)}
@@ -239,7 +239,10 @@ const MODES = ['Socratic', 'Guided']
 
 const INITIAL_MESSAGES = [
   {
-    id: 1,
+    // String id, not a number: generated messages are prefixed with 'm' so the
+    // welcome message can never collide with the counter no matter what it is
+    // reset to.
+    id: 'welcome',
     role: 'assistant',
     content: "Hi there! 👋 I'm your **Socratic AI Tutor**. I won't just hand you answers — instead, I'll guide your thinking step-by-step so you build deep understanding.\n\nWhat are you working on today? You can ask me a concept, upload your lecture PDF, or try: *\"Explain Merge Sort to me.\"*",
     time: 'Just now',
@@ -271,7 +274,7 @@ export default function AITutorScreen() {
   // Monotonic message id. A counter avoids Date.now() so ids stay stable and
   // never collide when two messages land in the same millisecond.
   const msgId    = useRef(0)
-  const nextId   = () => ++msgId.current
+  const nextId   = () => `m${++msgId.current}`
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages, loading])
 
@@ -279,7 +282,10 @@ export default function AITutorScreen() {
     const trimmed = (text || input).trim()
     if (!trimmed) return
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    const userMsg = { id: nextId(), role: 'user', content: trimmed, time }
+    // Stamp each turn with the mode it was sent under. Without this, switching
+    // mode relabels every earlier message, including the ones the model actually
+    // answered in Socratic mode.
+    const userMsg = { id: nextId(), role: 'user', content: trimmed, time, mode }
     setMessages(prev => [...prev, userMsg])
     setInput('')
     setLoading(true)
@@ -310,7 +316,7 @@ export default function AITutorScreen() {
         )
       }
 
-      setMessages(prev => [...prev, { id: nextId(), role: 'assistant', content: data.reply, time }])
+      setMessages(prev => [...prev, { id: nextId(), role: 'assistant', content: data.reply, time, mode }])
     } catch (err) {
       console.error('Tutor error:', err)
       setToast(`⚠️ ${err.message}`)
@@ -319,6 +325,7 @@ export default function AITutorScreen() {
         role: 'assistant',
         content: `Maaf, saya sedang tidak bisa merespons. (${err.message})`,
         time,
+        mode,
       }])
     }
 
@@ -415,7 +422,7 @@ export default function AITutorScreen() {
           </div>
         )}
 
-        {messages.map(msg => <MessageBubble key={msg.id} msg={msg} />)}
+        {messages.map(msg => <MessageBubble key={msg.id} msg={msg} mode={msg.mode ?? mode} />)}
 
         {loading && (
           <div className="flex gap-3 animate-slide-up">

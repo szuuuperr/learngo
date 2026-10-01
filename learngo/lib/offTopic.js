@@ -39,13 +39,20 @@ const OFF_TOPIC_PATTERNS = [
   /\b(siapa|nama)\b[\s\S]{0,16}\b(kamu|anda|lo)\b/i,
   /\b(kamu|anda|lo)\b[\s\S]{0,16}\bsiapa\b/i,
   /\b(lol|haha|hihi|hehe|xd|wkwk)\b/i,
+  // "sebutkan topik yang kamu ajarkan" is a question about the tutor rather
+  // than about computer science. The wording has no shared vocabulary with the
+  // who-are-you patterns above, so it needs its own rule. Anchored on the
+  // self-reference plus an instruction verb, so a real question like "kamu bisa
+  // jelaskan merge sort?" still passes through.
+  /\b(kamu|anda|lo)\b[\s\S]{0,24}\b(sebutkan|sebut|mention)\b[\s\S]{0,40}\b(topik|topic|bidang|materi|fokus|bantuan)\b/i,
+  /\b(sebutkan|sebut|mention)\b[\s\S]{0,40}\b(topik|topic|bidang|materi|fokus)\b[\s\S]{0,24}\b(kamu|anda|lo)\b/i,
 ]
 
 // Cheap pre-filter so a long CS question containing an innocent word like
 // "bit" never gets pattern-matched needlessly. A message is only checked
 // against the patterns above when it mentions one of these words at all.
 const LIKELY_OFF_TOPIC =
-  /\b(resep|masak|masakan|cuaca|prakiraan|berita|jadwal|liga|bola|politik|kabar|siapa|nama|news|weather|forecast|recipe|cook|stock|crypto|bitcoin|celebrity|hello|halo|hai|hi|hei|pagi|siang|sore|malam|who|how\s+are)\b/i
+  /\b(resep|masak|masakan|cuaca|prakiraan|berita|jadwal|liga|bola|politik|kabar|siapa|nama|sebutkan|sebut|mention|topik|topic|bidang|materi|fokus|lol|haha|hihi|hehe|wkwk|news|weather|forecast|recipe|cook|stock|crypto|bitcoin|celebrity|hello|halo|hai|hi|hei|pagi|siang|sore|malam|who|how\s+are)\b/i
 
 const REFUSAL =
   'Maaf, saya hanya bisa membantu soal pemrograman dan ilmu komputer. ' +

@@ -42,6 +42,10 @@ export function extractLangflowText(payload) {
     first.outputs?.[0]?.artifacts?.message,
     first.outputs?.[0]?.results?.message,
     first.outputs?.[0]?.results?.text,
+    // A text component nests the string one level deeper, as
+    // outputs.message.message, so unwrap rather than only reading the string
+    // case.
+    first.outputs?.[0]?.outputs?.message?.message,
     first.outputs?.[0]?.outputs?.message,
     first.artifacts?.message,
   ]

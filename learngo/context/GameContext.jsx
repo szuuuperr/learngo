@@ -78,6 +78,11 @@ function reducer(state, action) {
     // Overwrite the display/stats fields from the `users` row. Only the fields
     // listed here are touched - completedLevels, questsDone and achievements
     // stay owned by localStorage, since they are per-device state for now.
+    //
+    // socratic_mode and active_lang are deliberately NOT applied here. Both are
+    // user-controlled preferences that the UI writes to this state directly, so
+    // reading them back from the profile on every load would silently undo the
+    // user's choice the moment the profile arrived or was refetched.
     case 'APPLY_PROFILE': {
       const p = action.profile
       const next = { ...state }
@@ -91,8 +96,6 @@ function reducer(state, action) {
       if (p.gems != null)      next.gems = p.gems
       if (p.keys != null)      next.keys = p.keys
       if (p.daily_goal_progress != null) next.dailyGoalProgress = p.daily_goal_progress
-      if (p.socratic_mode != null)      next.socraticMode = p.socratic_mode
-      if (p.active_lang != null)         next.activeLang = p.active_lang
       return next
     }
 

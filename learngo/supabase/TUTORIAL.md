@@ -154,15 +154,27 @@ Add redirect URL persis seperti itu — tanpa slash di akhir, tanpa trailing pat
 Trigger `on_auth_user_created` membaca `raw_user_meta_data` milik Google. Kalau `name` di profilmu null setelah login, cek di SQL Editor:
 
 ```sql
-select id, name, created_at from public.users;
+select u.id, u.name, au.email, au.raw_user_meta_data
+from public.users u
+join auth.users au on au.id = u.id;
 ```
 
-Kalau kosong, berarti user-nya dibuat sebelum trigger dipasang. Perbaiki manual:
+Kolom `email` **tidak ada** di `public.users` — email hanya ada di `auth.users`, dan tabel itu sengaja tidak kiteks ke profil supaya RLS tidak perlu mengekspos email user lain lewat join.
+
+Kalau `name` kosong, berarti row-nya dibuat sebelum trigger dipasang. Perbaiki manual:
 
 ```sql
-update public.users
-set name = split_part(email, '@', 1)
-where name is null;
+update public.users u
+set name = split_part(au.email, '@', 1)
+from auth.users au
+where au.id = u.id
+  and u.name is null;
+```
+
+Kalau dua-duanya (`u.name` dan `au.email`) kosong, akunnya dibuat manual di dashboard. Delete row profil lalu login ulang agar trigger berjalan — ini aman, `on delete cascade` hanya berlaku kalau user dihapus dari `auth.users`:
+
+```sql
+delete from public.users where id = 'UUID_USER_KAMU';
 ```
 
 ---
@@ -178,7 +190,7 @@ Di SQL Editor:
 select count(*) from public.users;
 ```
 
-Lalu `npm run dev` → buka `http://localhost:3000` → login dengan Google → cek lagi. Kalau `name` terisi, trigger bekerja.
+Lalu `npm run dev` → buka `http://localhost:3000` → login dengan Google → cek lagi. Kalau `name` terisi, trigger bekerja dan `GameContext` akan menampilkannya di header.
 
 ### 5b. Uji RLS via curl
 
@@ -279,6 +291,6 @@ Ini normal untuk anon key — `users` hanya bisa dibaca oleh user yang login. In
 
 ## Berikutnya
 
-Tahap 2 selesai setelah SQL dijalankan dan kurasi RLS lolos. Tahap 3 mengganti `isLoggedIn = true` yang masih hardcoded di `context/UIContext.jsx:38`, menghapus login `setTimeout` palsu di `components/AuthModals.jsx:47`, dan menyambungkan `GameContext` ke baris `users`.
+Tahap 2 dan 3 selesai: login Google sudah tersambung ke session Supabase, `isLoggedIn` membaca session asli, dan `GameContext` mengambil nama/XP/level dari baris `users`.
 
-Tidak ada kode Supabase yang belum tersambung ke app — file `.env.example` dan `0001_init.sql` sudah kompatibel dengan stage 3+.
+Yang masih mock: `services/aiService.js` (OpenAI, key bocor ke client) dan upload PDF di `AITutorScreen`. Keduanya digantikan Langflow di Tahap 4 dan 5.

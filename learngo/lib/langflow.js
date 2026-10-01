@@ -101,8 +101,9 @@ export async function callLangflow({ message, mode, sessionId }) {
         input_value: message,
         input_type: inputType,
         output_type: outputType,
-        // Langflow uses this to scope conversation memory server-side, so the
-        // flow can hold context without us resending the whole transcript.
+        // Every caller passes a per-request id. Scoping to anything stable (a user,
+        // a tab) would let the flow's memory outlive the chat that built it, and
+        // a stale topic can then steer an unrelated question.
         session_id: sessionId,
       }),
     })

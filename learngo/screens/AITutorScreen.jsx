@@ -118,7 +118,9 @@ function MessageBubble({ msg, mode }) {
 }
 
 // ─── PDF Upload Zone ────────────────────────────────────────────────────────
-function PDFUploadZone({ onUpload }) {
+const MAX_PDF_MB = 50
+
+function PDFUploadZone({ onUpload, onError }) {
   const [dragging, setDragging] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [uploaded, setUploaded] = useState(null)
@@ -128,16 +130,28 @@ function PDFUploadZone({ onUpload }) {
     e.preventDefault()
     setDragging(false)
     const file = e.dataTransfer.files[0]
-    if (file && file.type === 'application/pdf') processFile(file)
+    if (file) processFile(file)
   }
 
-  const processFile = (file) => {
+  // The browser-declared type is client-controlled and the server checks the
+  // file signature anyway, so this only rejects the obvious mistakes early
+  // rather than acting as a security check.
+  const processFile = async (file) => {
+    if (file.type && file.type !== 'application/pdf') {
+      onError?.(`${file.name} is not a PDF.`)
+      return
+    }
+    if (file.size > MAX_PDF_MB * 1024 * 1024) {
+      onError?.(`${file.name} is larger than ${MAX_PDF_MB} MB.`)
+      return
+    }
+
     setUploading(true)
-    setTimeout(() => {
-      setUploading(false)
-      setUploaded(file.name)
-      onUpload(file.name)
-    }, 2200)
+    setUploaded(null)
+    const form = new FormData()
+    form.append('file', file)
+    await onUpload(file, form)
+    setUploading(false)
   }
 
   if (uploaded) {
@@ -174,10 +188,8 @@ function PDFUploadZone({ onUpload }) {
       {uploading ? (
         <div className="flex flex-col items-center gap-2">
           <Loader size={24} className="text-cyan-DEFAULT animate-spin" />
-          <p className="text-sm text-slate-DEFAULT">AI is parsing your PDF…</p>
-          <div className="w-40 h-1.5 bg-navy rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-cyan-DEFAULT to-emerald-DEFAULT rounded-full animate-pulse" style={{ width: '65%' }} />
-          </div>
+          <p className="text-sm text-slate-DEFAULT">Uploading and reading your PDF…</p>
+          <p className="text-xs text-slate-DEFAULT/60">Large modules can take a minute</p>
         </div>
       ) : (
         <div className="flex flex-col items-center gap-2">
@@ -193,43 +205,51 @@ function PDFUploadZone({ onUpload }) {
 }
 
 // ─── AI Summary Panel ───────────────────────────────────────────────────────
-function AISummaryPanel({ filename }) {
-  const summaryPoints = [
-    'Memory hierarchy: registers → L1/L2/L3 cache → RAM → disk, each level has different speed/capacity trade-offs.',
-    'Spatial locality: nearby memory addresses are likely to be accessed together (e.g., array traversal).',
-    'Temporal locality: recently accessed data is likely to be accessed again soon (e.g., loop variables).',
-    'Write-back policy: changes are written to cache first; main memory updated only when cache line is evicted.',
-    'Cache miss penalty is the main bottleneck — minimizing misses is critical for performance optimization.',
-  ]
-  const references = [
-    'Patterson & Hennessy — Computer Organization and Design, Ch. 5',
-    'Tanenbaum — Modern Operating Systems, Section 4.3',
-    'CS102 Lecture Slides: Week 4, Slides 18–34',
-  ]
-
+// Renders what /api/summarize actually returned. The three points and one quiz
+// question come from the model; nothing here is placeholder copy.
+function AISummaryPanel({ summary, filename }) {
   return (
     <div className="space-y-3 animate-fade-in">
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center gap-2 mb-2 flex-wrap">
         <Sparkles size={16} className="text-cyan-DEFAULT" />
-        <p className="text-sm font-semibold text-white">AI Summary of <span className="text-cyan-DEFAULT">{filename}</span></p>
+        <p className="text-sm font-semibold text-white">
+          AI Summary of <span className="text-cyan-DEFAULT">{filename}</span>
+        </p>
+        {summary.pages != null && (
+          <span className="text-xs text-slate-DEFAULT/60">
+            {summary.pages} page{summary.pages === 1 ? '' : 's'}
+          </span>
+        )}
       </div>
+
+      {/* A partial summary is still useful, but the user should know it is not
+          the whole document rather than assuming it is. */}
+      {(summary.partial || summary.skippedPages > 0) && (
+        <div className="glass-card rounded-xl border border-orange-DEFAULT/30 bg-orange-DEFAULT/8 px-3 py-2">
+          <p className="text-xs text-orange-DEFAULT leading-relaxed">
+            {summary.skippedPages > 0
+              ? `Partial summary: ${summary.skippedPages} later page${summary.skippedPages === 1 ? '' : 's'} were not read.`
+              : 'Partial summary: one section could not be summarised.'}
+          </p>
+        </div>
+      )}
+
       <div className="glass-card rounded-2xl border border-cyan-DEFAULT/20 p-4 space-y-2">
         <p className="text-xs font-semibold text-cyan-DEFAULT uppercase tracking-widest">Key Concepts</p>
-        {summaryPoints.map((point, i) => (
+        {summary.points.map((point, i) => (
           <div key={i} className="flex gap-2.5 text-sm">
             <div className="w-5 h-5 rounded-full bg-cyan-DEFAULT/15 text-cyan-DEFAULT text-xs flex items-center justify-center flex-shrink-0 mt-0.5 font-bold">{i + 1}</div>
             <p className="text-slate-light leading-relaxed">{point}</p>
           </div>
         ))}
       </div>
-      <div className="glass-card rounded-2xl border border-white/8 p-4">
-        <p className="text-xs font-semibold text-slate-DEFAULT uppercase tracking-widest mb-2">References</p>
-        {references.map((ref, i) => (
-          <p key={i} className="text-xs text-slate-DEFAULT flex items-start gap-1.5 mb-1">
-            <span className="text-orange-DEFAULT mt-0.5">•</span> {ref}
-          </p>
-        ))}
-      </div>
+
+      {summary.question && (
+        <div className="glass-card rounded-2xl border border-orange-DEFAULT/25 p-4">
+          <p className="text-xs font-semibold text-orange-DEFAULT uppercase tracking-widest mb-2">Quiz Question</p>
+          <p className="text-sm text-slate-light leading-relaxed">{summary.question}</p>
+        </div>
+      )}
     </div>
   )
 }
@@ -269,6 +289,8 @@ export default function AITutorScreen() {
   const [activeTab, setActiveTab]     = useState('chat')   // 'chat' | 'pdf'
   const [uploadedFile, setUploadedFile] = useState(null)
   const [showSummary, setShowSummary] = useState(false)
+  const [summary, setSummary] = useState(null)
+  const [summarizing, setSummarizing] = useState(false)
   const bottomRef = useRef(null)
   const inputRef  = useRef(null)
   // Monotonic message id. A counter avoids Date.now() so ids stay stable and
@@ -332,28 +354,54 @@ export default function AITutorScreen() {
     setLoading(false)
   }
 
-  const handlePDFUpload = (filename) => {
-    setUploadedFile(filename)
-    setTimeout(() => setShowSummary(true), 400)
+  const handlePDFUpload = async (file, form) => {
+    const filename = file.name
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    setMessages(prev => [
-      ...prev,
-      { id: nextId(), role: 'user', content: `I've uploaded my lecture notes: **${filename}**. Please summarize the key concepts.`, time },
-    ])
-    setTimeout(() => {
+
+    setUploadedFile(filename)
+    setSummary(null)
+    setSummarizing(true)
+
+    try {
+      const res = await fetch('/api/summarize', { method: 'POST', body: form })
+      const data = await res.json().catch(() => ({}))
+
+      if (!res.ok) {
+        throw new Error(
+          res.status === 401
+            ? 'Your session expired. Please sign in again.'
+            : data.error || 'Could not summarise that PDF.',
+        )
+      }
+
+      setSummary(data)
+      setShowSummary(true)
       setMessages(prev => [...prev, {
         id: nextId(),
         role: 'assistant',
-        content: `Great! I've parsed **${filename}**. I found 5 key concepts related to Memory Hierarchy and Cache Systems. I've generated a structured summary — you can see it in the PDF panel above.\n\nNow, let me ask you: **Before reading the summary, what do you already know about L1, L2, and L3 cache?** This will help me tailor my Socratic questions to fill your specific gaps.`,
+        // Describe what came back rather than a fixed sentence, so the chat log
+        // agrees with the panel even when the summary is partial.
+        content: data.partial
+          ? `I've read **${filename}** (${data.pages} pages) and summarised what I could. The summary panel above is partial — one or more sections didn't come through cleanly.`
+          : `I've read **${filename}** (${data.pages} pages) and pulled out the 3 key concepts. They're in the panel above.`,
         time,
+        mode,
       }])
-    }, 2800)
+    } catch (err) {
+      console.error('Summarize error:', err)
+      setToast(`⚠️ ${err.message}`)
+      setUploadedFile(null)
+    }
+
+    setSummarizing(false)
   }
 
   const resetChat = () => {
     setMessages(INITIAL_MESSAGES)
     setUploadedFile(null)
     setShowSummary(false)
+    setSummary(null)
+    setSummarizing(false)
   }
 
   return (
@@ -403,8 +451,16 @@ export default function AITutorScreen() {
       {/* PDF panel (conditional) */}
       {activeTab === 'pdf' && (
         <div className="mb-3 space-y-3">
-          <PDFUploadZone onUpload={handlePDFUpload} />
-          {showSummary && uploadedFile && <AISummaryPanel filename={uploadedFile} />}
+          <PDFUploadZone onUpload={handlePDFUpload} onError={setToast} />
+          {summarizing && (
+            <div className="glass-card rounded-2xl border border-white/8 px-4 py-3 flex items-center gap-3">
+              <Loader size={16} className="text-cyan-DEFAULT animate-spin" />
+              <p className="text-sm text-slate-DEFAULT">
+                Reading {uploadedFile} and building your summary…
+              </p>
+            </div>
+          )}
+          {showSummary && summary && <AISummaryPanel summary={summary} filename={uploadedFile} />}
         </div>
       )}
 

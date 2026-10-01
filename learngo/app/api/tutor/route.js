@@ -55,9 +55,9 @@ export async function POST(request) {
   // if the flow is ever reconfigured or swapped.
   const prompt = getSystemPrompt(mode)
 
-  // Replay the last few turns so the flow has context. Langflow's own
-  // session_id already carries history server-side, but flows differ in how
-  // much they retain, and a short inline replay makes guided mode reliable.
+  // Replay the last few turns so the flow has context. This is now the only
+  // carrier of conversation context: the request below uses a per-request
+  // session id, so the flow keeps no memory of its own between calls.
   const recent = history
     .filter((m) => m && typeof m.content === 'string' && m.role !== 'system')
     .slice(-6)
@@ -70,9 +70,18 @@ export async function POST(request) {
     'Bob:',
   ].join('\n')
 
-  // One stable id per browser session so Langflow scopes its memory, without
-  // leaking the user id to a third party.
-  const sessionId = `learngo-${user.id}`
+  // A fresh id per request, deliberately.
+  //
+  // The flow's Agent component keeps conversation memory scoped to session_id,
+  // with no expiry. Keyed by user id that memory outlived the chat that created
+  // it, so a question from an earlier session could steer an unrelated one - a
+  // bare "gatau gimana tu" after a PDF upload came back about Big-O notation
+  // that no longer had anything to do with the document on screen.
+  //
+  // The transcript above already replays the last few turns, so the flow does
+  // not need its own memory to stay coherent. Randomising the id each request
+  // makes the response depend only on what was actually sent.
+  const sessionId = `learngo-${crypto.randomUUID()}`
 
   try {
     const reply = await callLangflow({

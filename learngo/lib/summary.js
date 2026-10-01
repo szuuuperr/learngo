@@ -1,0 +1,110 @@
+// JSON extraction from model output.
+//
+// The summary prompt asks for JSON, but a model can wrap it in a code fence,
+// prepend a sentence of prose, or trailing-commas the array. Rather than trust
+// the model to be clean, try in order: direct parse, fenced block, first
+// balanced object in the text, then a line-based salvage. The salvage path
+// exists because the summary panel is a headline feature of the demo and a
+// slightly malformed response should degrade, not blank the screen.
+
+/**
+ * Pull the first balanced {...} out of a string, respecting braces inside
+ * strings so a "}" in prose does not end the object early.
+ */
+function findFirstObject(text) {
+  const start = text.indexOf('{')
+  if (start === -1) return null
+
+  let depth = 0
+  let inString = false
+  let escaped = false
+
+  for (let i = start; i < text.length; i++) {
+    const ch = text[i]
+    if (escaped) { escaped = false; continue }
+    if (ch === '\\') { escaped = true; continue }
+    if (ch === '"') { inString = !inString; continue }
+    if (inString) continue
+    if (ch === '{') depth++
+    else if (ch === '}') {
+      depth--
+      if (depth === 0) return text.slice(start, i + 1)
+    }
+  }
+  return null
+}
+
+function tryParse(candidate) {
+  try {
+    return JSON.parse(candidate)
+  } catch {
+    return null
+  }
+}
+
+/** Remove ```json fences and anything outside them. */
+function stripFences(text) {
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i)
+  return fenced ? fenced[1] : text
+}
+
+/** Last-resort: rebuild from numbered lines when the JSON itself is unusable. */
+function salvage(text) {
+  const points = []
+  const numbered = text.matchAll(/^\s*(?:[-*•]|\d+[.)])\s*(.{10,})$/gm)
+  for (const m of numbered) {
+    const line = m[1].trim()
+    if (line && !points.includes(line)) points.push(line)
+  }
+
+  const qMatch = text.match(/(?:^|\n)\s*(?:[-*•]|\d+[.)])?\s*(?:pertanyaan|question|kuis|quiz)\s*[:\-]\s*(.{10,})/i)
+
+  return {
+    points: points.slice(0, 3),
+    question: qMatch ? qMatch[1].trim() : null,
+  }
+}
+
+/**
+ * @returns {{points: string[], question: string|null}|null}
+ */
+export function parseSummary(raw) {
+  if (!raw || typeof raw !== 'string') return null
+
+  const fromFence = tryParse(stripFences(raw).trim())
+  if (fromFence) return normalise(fromFence)
+
+  const balanced = tryParse(findFirstObject(stripFences(raw)) ?? '')
+  if (balanced) return normalise(balanced)
+
+  const salvaged = salvage(raw)
+  if (salvaged.points.length) return normalise(salvaged)
+
+  return null
+}
+
+/**
+ * Coerce whatever the model produced into the shape the UI expects. The brief
+ * asks for exactly 3 points and 1 question, so points are capped at 3 and a
+ * missing question becomes null rather than an empty string.
+ */
+function normalise(obj) {
+  const list = Array.isArray(obj?.points)
+    ? obj.points
+    : Array.isArray(obj?.keyPoints)
+      ? obj.keyPoints
+      : Array.isArray(obj?.poin)
+        ? obj.poin
+        : []
+
+  const points = list
+    .map((p) => (typeof p === 'string' ? p : p?.text ?? p?.point ?? p?.title ?? ''))
+    .map((p) => String(p).replace(/^\s*[-*•]\s*/, '').trim())
+    .filter(Boolean)
+    .slice(0, 3)
+
+  const q = obj?.question ?? obj?.quiz ?? obj?.pertanyaan ?? obj?.kuis ?? null
+  const question = typeof q === 'string' && q.trim() ? q.trim() : null
+
+  return { points, question }
+}

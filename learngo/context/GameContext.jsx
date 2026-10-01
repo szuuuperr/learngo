@@ -1,6 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useReducer, useCallback, useEffect, useRef } from 'react'
+import { useAuth } from './AuthContext'
 
 // ─── Persistence helpers ───────────────────────────────────────────────────────
 const SAVE_KEY = 'learngo_save'
@@ -20,8 +21,9 @@ function loadSaved() {
 
 // ─── Initial State ─────────────────────────────────────────────────────────────
 const INITIAL_DEFAULTS = {
-  // User
-  name: 'Mirelle',
+  // User. `name` is a placeholder only - APPLY_PROFILE replaces it with the
+  // real value from the `users` row as soon as Supabase returns it.
+  name: 'Learner',
   level: 5,
   xp: 450,
   xpToNext: 600,
@@ -70,6 +72,27 @@ function reducer(state, action) {
       for (const k of SAVED_FIELDS) {
         if (action.saved[k] !== undefined) next[k] = action.saved[k]
       }
+      return next
+    }
+
+    // Overwrite the display/stats fields from the `users` row. Only the fields
+    // listed here are touched - completedLevels, questsDone and achievements
+    // stay owned by localStorage, since they are per-device state for now.
+    case 'APPLY_PROFILE': {
+      const p = action.profile
+      const next = { ...state }
+      if (p.name != null)      next.name = p.name
+      if (p.xp != null)        next.xp = p.xp
+      if (p.level != null)     next.level = p.level
+      if (p.xp_to_next != null) next.xpToNext = p.xp_to_next
+      if (p.streak != null)    next.streak = p.streak
+      if (p.lives != null)     next.lives = p.lives
+      if (p.max_lives != null) next.maxLives = p.max_lives
+      if (p.gems != null)      next.gems = p.gems
+      if (p.keys != null)      next.keys = p.keys
+      if (p.daily_goal_progress != null) next.dailyGoalProgress = p.daily_goal_progress
+      if (p.socratic_mode != null)      next.socraticMode = p.socratic_mode
+      if (p.active_lang != null)         next.activeLang = p.active_lang
       return next
     }
 
@@ -163,6 +186,16 @@ export function GameProvider({ children }) {
     if (Object.keys(saved).length > 0) dispatch({ type: 'HYDRATE', saved })
     hydrated.current = true
   }, [])
+
+  // Pull the authoritative profile in once Supabase has loaded it. Runs after
+  // the localStorage hydration above, so a returning user sees their stored
+  // progress first and their DB profile second.
+  const { profile } = useAuth()
+  const profileId = profile?.id ?? null
+  useEffect(() => {
+    if (!profileId) return
+    dispatch({ type: 'APPLY_PROFILE', profile })
+  }, [profileId, profile])
 
   // Debounced save to localStorage (600ms). Skipped until hydration finished so
   // the defaults never overwrite the saved state.

@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { X, Eye, EyeOff, Mail, Lock, User, Loader, ArrowRight, LogOut } from 'lucide-react'
 import { FoxMascot } from './Header'
+import { useAuth } from '@/context/AuthContext'
 
 // ─── Input Field ──────────────────────────────────────────────────────────────
 function AuthInput({ icon: Icon, placeholder, type = 'text', value, onChange, toggleable }) {
@@ -34,22 +35,76 @@ function AuthInput({ icon: Icon, placeholder, type = 'text', value, onChange, to
   )
 }
 
+// Google mark. lucide has no brand icons, and the real multi-colour logo reads
+// better than an emoji here.
+function GoogleIcon({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#4285F4" d="M23.5 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.45a5.5 5.5 0 0 1-2.39 3.61v3h3.86c2.26-2.08 3.58-5.15 3.58-8.8Z" />
+      <path fill="#34A853" d="M12 24c3.24 0 5.96-1.08 7.94-2.91l-3.86-3c-1.08.72-2.45 1.15-4.08 1.15-3.13 0-5.78-2.11-6.73-4.96H1.28v3.1A12 12 0 0 0 12 24Z" />
+      <path fill="#FBBC05" d="M5.27 14.28a7.2 7.2 0 0 1 0-4.56v-3.1H1.28a12 12 0 0 0 0 10.76l3.99-3.1Z" />
+      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.43-3.43C17.95 1.19 15.24 0 12 0A12 12 0 0 0 1.28 6.62l3.99 3.1C6.22 6.86 8.87 4.75 12 4.75Z" />
+    </svg>
+  )
+}
+
 // ─── Auth Modal (Login + Register) ────────────────────────────────────────────
 export function AuthModal({ onClose, onSuccess }) {
   const [mode, setMode]       = useState('login')  // 'login' | 'register'
   const [loading, setLoading] = useState(false)
+  const [googleBusy, setGoogleBusy] = useState(false)
+  const [error, setError]     = useState(null)
+  const [notice, setNotice]   = useState(null)
   const [form, setForm]       = useState({ name: '', email: '', password: '' })
+
+  const { signInWithGoogle, signInWithPassword, signUp } = useAuth()
 
   const set = (key) => (e) => setForm(f => ({ ...f, [key]: e.target.value }))
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.email || !form.password) return
+    if (mode === 'register' && !form.name) {
+      setError('Please enter your name.')
+      return
+    }
+
+    setError(null)
+    setNotice(null)
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
+
+    try {
+      if (mode === 'register') {
+        const session = await signUp(form.email, form.password, form.name)
+        // No session back means the project still requires email confirmation.
+        // The account exists either way, so tell the user what to do next
+        // instead of showing a generic failure.
+        if (!session) {
+          setNotice('Check your email to confirm your account, then sign in.')
+          setMode('login')
+          return
+        }
+      } else {
+        await signInWithPassword(form.email, form.password)
+      }
       onSuccess()
-    }, 1600)
+    } catch (err) {
+      setError(err.message || 'Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGoogle = async () => {
+    setError(null)
+    setGoogleBusy(true)
+    try {
+      // Navigates away on success, so onSuccess here is never reached.
+      await signInWithGoogle('/tutor')
+    } catch (err) {
+      setError(err.message || 'Google sign-in failed. Check the provider config.')
+      setGoogleBusy(false)
+    }
   }
 
   return (
@@ -98,9 +153,20 @@ export function AuthModal({ onClose, onSuccess }) {
               </div>
             )}
 
+            {error && (
+              <p role="alert" className="text-xs text-red-400 bg-red-500/10 border border-red-500/25 rounded-xl px-3 py-2">
+                {error}
+              </p>
+            )}
+            {notice && (
+              <p role="status" className="text-xs text-slate-DEFAULT bg-white/5 border border-white/10 rounded-xl px-3 py-2">
+                {notice}
+              </p>
+            )}
+
             <button
               type="submit"
-              disabled={loading || !form.email || !form.password}
+              disabled={loading || googleBusy || !form.email || !form.password}
               className="btn-primary w-full flex items-center justify-center gap-2 mt-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
@@ -118,15 +184,16 @@ export function AuthModal({ onClose, onSuccess }) {
             <div className="flex-1 h-px bg-white/8" />
           </div>
 
-          {/* Social login placeholders */}
-          <div className="grid grid-cols-2 gap-2">
-            {['🔵 Google', '⚫ GitHub'].map(provider => (
-              <button key={provider}
-                className="btn-secondary py-2.5 flex items-center justify-center gap-2">
-                <span className="text-xs font-semibold">{provider}</span>
-              </button>
-            ))}
-          </div>
+          <button
+            type="button"
+            onClick={handleGoogle}
+            disabled={loading || googleBusy}
+            className="btn-secondary w-full py-2.5 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {googleBusy
+              ? <><Loader size={16} className="animate-spin" /> Redirecting to Google…</>
+              : <><GoogleIcon /> <span className="text-xs font-semibold">Continue with Google</span></>}
+          </button>
 
           <p className="text-xs text-center text-slate-DEFAULT mt-5 leading-relaxed">
             {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}

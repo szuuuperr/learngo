@@ -1,3 +1,6 @@
+'use client'
+
+import Image from 'next/image'
 import React, { useState, useEffect } from "react";
 import {
   Bell,
@@ -18,7 +21,9 @@ import {
 } from "../data/mockData";
 import { LearnGoIcon, FoxFaceSVG } from "../components/LearnGoLogo";
 import { useGame } from "../context/GameContext";
-import maskotSVG from "../../public/learngo/Aset-06.svg";
+
+// Served from /public by Next.js — reference by URL, not by import.
+const maskotSVG = "/learngo/Aset-06.svg";
 
 // ─── Floating Fox SVG ─────────────────────────────────────────────────────────
 function FloatingFox({ size = 72 }) {
@@ -398,7 +403,7 @@ function DailyGoalBar({ onNavigate }) {
           </p>
         </div>
         {/* <FloatingFox size={60} /> */}
-        <img src={maskotSVG} width={60} />
+        <Image src={maskotSVG} alt="LearnGo fox mascot" width={60} height={60} />
       </div>
       {/* Track */}
       <div

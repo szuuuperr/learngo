@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react'
 import { useGame } from '../context/GameContext'
 import { languages, chapterTitles, lessonsByLang } from '../data/curriculum'

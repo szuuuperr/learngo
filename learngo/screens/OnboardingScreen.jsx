@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react'
 import { ChevronRight, Target } from 'lucide-react'
 import { FoxMascot } from '../components/Header'
@@ -55,7 +57,7 @@ function StepWelcome({ onNext }) {
         </div>
       </div>
       <button onClick={onNext} className="btn-primary mt-8 px-10 py-3 text-base w-full max-w-xs">
-        Let's Go <ChevronRight size={16} className="inline -mt-0.5" />
+        Let&apos;s Go <ChevronRight size={16} className="inline -mt-0.5" />
       </button>
     </div>
   )

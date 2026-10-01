@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, useRef, useEffect } from 'react'
 import {
   Send, Upload, FileText, Bot, User, Copy, Check,
@@ -271,6 +273,10 @@ export default function AITutorScreen() {
   const bottomRef = useRef(null)
   const inputRef  = useRef(null)
   const aiIdx     = useRef(0)
+  // Monotonic message id. A counter avoids Date.now() so ids stay stable and
+  // never collide when two messages land in the same millisecond.
+  const msgId    = useRef(0)
+  const nextId   = () => ++msgId.current
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages, loading])
 
@@ -278,7 +284,7 @@ export default function AITutorScreen() {
     const trimmed = (text || input).trim()
     if (!trimmed) return
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    const userMsg = { id: Date.now(), role: 'user', content: trimmed, time }
+    const userMsg = { id: nextId(), role: 'user', content: trimmed, time }
     setMessages(prev => [...prev, userMsg])
     setInput('')
     setLoading(true)
@@ -292,21 +298,21 @@ export default function AITutorScreen() {
           content: m.content,
         }))
         const reply = await sendSocraticMessage(history, socraticMode, OPENAI_KEY)
-        setMessages(prev => [...prev, { id: Date.now() + 1, role: 'assistant', content: reply, time }])
+        setMessages(prev => [...prev, { id: nextId(), role: 'assistant', content: reply, time }])
       } catch (err) {
         console.error('OpenAI error:', err)
         setToast(`⚠️ AI unavailable: ${err.message.slice(0, 60)} — using offline mode`)
         // Fallback to mock
         const reply = mockAIResponses[aiIdx.current % mockAIResponses.length]
         aiIdx.current++
-        setMessages(prev => [...prev, { id: Date.now() + 1, role: 'assistant', content: reply, time }])
+        setMessages(prev => [...prev, { id: nextId(), role: 'assistant', content: reply, time }])
       }
     } else {
       // ── Mock fallback (no API key) ─────────────────────────────────────────
       await new Promise(r => setTimeout(r, 1400 + Math.random() * 800))
       const reply = mockAIResponses[aiIdx.current % mockAIResponses.length]
       aiIdx.current++
-      setMessages(prev => [...prev, { id: Date.now() + 1, role: 'assistant', content: reply, time }])
+      setMessages(prev => [...prev, { id: nextId(), role: 'assistant', content: reply, time }])
     }
 
     setLoading(false)
@@ -318,11 +324,11 @@ export default function AITutorScreen() {
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     setMessages(prev => [
       ...prev,
-      { id: Date.now(), role: 'user', content: `I've uploaded my lecture notes: **${filename}**. Please summarize the key concepts.`, time },
+      { id: nextId(), role: 'user', content: `I've uploaded my lecture notes: **${filename}**. Please summarize the key concepts.`, time },
     ])
     setTimeout(() => {
       setMessages(prev => [...prev, {
-        id: Date.now() + 1,
+        id: nextId(),
         role: 'assistant',
         content: `Great! I've parsed **${filename}**. I found 5 key concepts related to Memory Hierarchy and Cache Systems. I've generated a structured summary — you can see it in the PDF panel above.\n\nNow, let me ask you: **Before reading the summary, what do you already know about L1, L2, and L3 cache?** This will help me tailor my Socratic questions to fill your specific gaps.`,
         time,

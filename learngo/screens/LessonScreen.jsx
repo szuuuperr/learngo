@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { X, Heart, Star, Check, ChevronRight, RotateCcw, Zap } from 'lucide-react'
 import { useGame } from '../context/GameContext'
@@ -566,7 +568,7 @@ function NoLivesScreen({ onClose, onRestart }) {
       </div>
       <h2 style={{ color: T.red, fontWeight: 900, fontSize: 26, margin: '0 0 8px' }}>Out of Lives!</h2>
       <p style={{ color: T.muted, fontSize: 14, lineHeight: 1.55, margin: '0 0 28px', maxWidth: 280 }}>
-        You've used all your hearts. Practice more, come back stronger! ❤️
+        You&apos;ve used all your hearts. Practice more, come back stronger! ❤️
       </p>
       <div style={{ display: 'flex', gap: 10, width: '100%', maxWidth: 300 }}>
         <button onClick={onClose} style={{ flex: 1, padding: '13px', borderRadius: 12, border: `1.5px solid ${T.border}`, background: 'none', color: T.light, cursor: 'pointer', fontWeight: 700, fontSize: 14, transition: 'all 0.2s' }}>

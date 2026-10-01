@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react'
 
 // Full LearnGo brand logo — fox face rounded square + wordmark

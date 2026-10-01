@@ -1,28 +1,12 @@
-import React, { useState, useCallback, useEffect } from 'react'
-import { GameProvider, useGame } from './context/GameContext'
-import Header from './components/Header'
-import { Sidebar, BottomNav } from './components/Navigation'
-import { AuthModal, LogoutModal } from './components/AuthModals'
-import HomeScreen        from './screens/HomeScreen'
-import AITutorScreen     from './screens/AITutorScreen'
-import LearnScreen       from './screens/LearnScreen'
-import QuestsScreen      from './screens/QuestsScreen'
-import GameScreen        from './screens/GameScreen'
-import LessonScreen      from './screens/LessonScreen'
-import CommunityScreen   from './screens/CommunityScreen'
-import OtherScreen       from './screens/OtherScreen'
-import OnboardingScreen  from './screens/OnboardingScreen'
+'use client'
 
-// ─── SPA Router: screen-id → component ───────────────────────────────────────
-const ROUTES = {
-  home:      { Component: HomeScreen,      navTab: 'home'   },
-  tutor:     { Component: AITutorScreen,   navTab: 'tutor'  },
-  learn:     { Component: LearnScreen,     navTab: 'learn'  },
-  quests:    { Component: QuestsScreen,    navTab: 'game'   },
-  game:      { Component: GameScreen,      navTab: 'game'   },
-  community: { Component: CommunityScreen, navTab: 'other'  },
-  other:     { Component: OtherScreen,     navTab: 'other'  },
-}
+import React, { useState } from 'react'
+import Header from './Header'
+import { Sidebar, BottomNav } from './Navigation'
+import { AuthModal, LogoutModal } from './AuthModals'
+import LessonScreen from '../screens/LessonScreen'
+import OnboardingScreen from '../screens/OnboardingScreen'
+import { useUI } from '../context/UIContext'
 
 // ─── Toast Notification ───────────────────────────────────────────────────────
 function Toast({ msg, onDone }) {
@@ -117,20 +101,8 @@ function LoginGate({ onOpen }) {
   )
 }
 
-// ─── Bridge: GameContext toasts → App-level toast ─────────────────────────────
-function GameToastBridge({ showToast }) {
-  const { toastMsg, clearToast } = useGame()
-  useEffect(() => {
-    if (toastMsg) {
-      showToast(toastMsg)
-      clearToast()
-    }
-  }, [toastMsg, showToast, clearToast])
-  return null
-}
-
 // ─── PWA Install Banner ───────────────────────────────────────────────────────
-function PWAInstallBanner({ prompt, onInstall, onDismiss }) {
+function PWAInstallBanner({ onInstall, onDismiss }) {
   return (
     <div
       className="fixed bottom-20 lg:bottom-0 left-0 right-0 z-40 flex justify-center pointer-events-none"
@@ -168,94 +140,22 @@ function PWAInstallBanner({ prompt, onInstall, onDismiss }) {
   )
 }
 
-// ─── App Root ─────────────────────────────────────────────────────────────────
-export default function App() {
-  const [screen, setScreen]           = useState('home')
-  const [isLoggedIn, setIsLoggedIn]   = useState(true)
-  const [showAuth, setShowAuth]       = useState(false)
-  const [showLogout, setShowLogout]   = useState(false)
-  const [toast, setToast]             = useState(null)
-  const [questModal, setQuestModal]   = useState(null)
-  // activeLesson shape: { lang, levelIndex, title } — set by GameScreen
-  const [activeLesson, setActiveLesson] = useState(null)
-  // Onboarding: show when logged in and not yet onboarded
-  const [showOnboarding, setShowOnboarding] = useState(
-    () => isLoggedIn && !localStorage.getItem('learngo_onboarded')
-  )
-  // PWA install prompt
-  const [pwaPrompt, setPwaPrompt]   = useState(null)
-  const [showPwaBanner, setShowPwaBanner] = useState(false)
-
-  useEffect(() => {
-    if (localStorage.getItem('learngo_pwa_no')) return
-    const handler = (e) => {
-      e.preventDefault()
-      setPwaPrompt(e)
-      setShowPwaBanner(true)
-    }
-    window.addEventListener('beforeinstallprompt', handler)
-    return () => window.removeEventListener('beforeinstallprompt', handler)
-  }, [])
-
-  const handlePwaInstall = async () => {
-    if (!pwaPrompt) return
-    pwaPrompt.prompt()
-    const { outcome } = await pwaPrompt.userChoice
-    setPwaPrompt(null)
-    setShowPwaBanner(false)
-    if (outcome === 'accepted') showToast('🎉 LearnGo installed successfully!')
-  }
-
-  const handlePwaDismiss = () => {
-    setShowPwaBanner(false)
-    localStorage.setItem('learngo_pwa_no', '1')
-  }
-
-  // ── navigate: accepts any route key ──────────────────────────────────────
-  const navigate = useCallback((id) => {
-    if (ROUTES[id]) {
-      setScreen(id)
-      // Scroll content area back to top on route change
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-  }, [])
-
-  const showToast = useCallback((msg) => {
-    setToast(null) // reset first so same msg re-triggers
-    requestAnimationFrame(() => setToast(msg))
-  }, [])
-
-  // ── auth handlers ─────────────────────────────────────────────────────────
-  const handleLogout = () => {
-    setShowLogout(false)
-    setIsLoggedIn(false)
-    setScreen('home')
-    showToast('✅ Logged out successfully')
-  }
-
-  const handleAuthSuccess = () => {
-    setShowAuth(false)
-    setIsLoggedIn(true)
-    showToast('🎉 Welcome back to LearnGo!')
-  }
-
-  // ── derived state ─────────────────────────────────────────────────────────
-  const route    = ROUTES[screen] ?? ROUTES.home
-  const { Component: ActiveScreen, navTab } = route
-
-  // Props injected per-screen (only those that need them)
-  const screenProps = {
-    home:      { onNavigate: navigate, onStartQuest: setQuestModal },
-    other:     { onLogout: () => setShowLogout(true), onAuth: () => setShowAuth(true), onNavigate: navigate },
-    game:      { onStartLesson: ({ lang, levelIndex, title }) => setActiveLesson({ lang, levelIndex, title }) },
-    community: { onNavigate: navigate },
-    tutor:     { onNavigate: navigate },
-    learn:     { onNavigate: navigate, onStartLesson: ({ lang, levelIndex, title }) => setActiveLesson({ lang, levelIndex, title }) },
-    quests:    { onNavigate: navigate },
-  }
+// ─── App Shell ────────────────────────────────────────────────────────────────
+// Persistent chrome (header, sidebar, bottom nav, overlays) wrapped around the
+// page rendered by the App Router. Per-page content arrives as `children`.
+export default function AppShell({ children }) {
+  const {
+    navigate, navTab,
+    isLoggedIn, showAuth, setShowAuth, showLogout, setShowLogout,
+    toast, showToast, clearToast,
+    questModal, setQuestModal,
+    activeLesson, setActiveLesson,
+    showOnboarding, setShowOnboarding,
+    showPwaBanner, handlePwaInstall, handlePwaDismiss,
+    handleLogout, handleAuthSuccess,
+  } = useUI()
 
   return (
-    <GameProvider>
     <div className="min-h-screen bg-[#0F172A] dot-grid">
       {/* ── Fixed Header ── */}
       <Header
@@ -267,29 +167,10 @@ export default function App() {
       {/* ── Desktop Sidebar ── */}
       <Sidebar active={navTab} onNavigate={navigate} />
 
-      {/* ── GameContext → App Toast bridge ── */}
-      <GameToastBridge showToast={showToast} />
-
-      {/* ── Main Content ── */}
+      {/* ── Main Content (page) ── */}
       <main className="pt-16 pb-20 lg:pb-6 lg:pl-56 min-h-screen">
         <div className="max-w-4xl mx-auto px-4 lg:px-6 py-5">
-
-          {/*
-           * SPA Router — renders the active screen component.
-           * State is preserved: screens keep their local state while mounted
-           * via CSS visibility trick, so only the active one is visible
-           * while the rest stay mounted but hidden (preserves chat history, etc.)
-           */}
-          {Object.entries(ROUTES).map(([key, { Component }]) => (
-            <div
-              key={key}
-              style={{ display: screen === key ? 'block' : 'none' }}
-              aria-hidden={screen !== key}
-            >
-              <Component {...(screenProps[key] ?? {})} />
-            </div>
-          ))}
-
+          {children}
         </div>
       </main>
 
@@ -298,16 +179,10 @@ export default function App() {
 
       {/* ── Modals ── */}
       {showAuth && (
-        <AuthModal
-          onClose={() => setShowAuth(false)}
-          onSuccess={handleAuthSuccess}
-        />
+        <AuthModal onClose={() => setShowAuth(false)} onSuccess={handleAuthSuccess} />
       )}
       {showLogout && (
-        <LogoutModal
-          onClose={() => setShowLogout(false)}
-          onConfirm={handleLogout}
-        />
+        <LogoutModal onClose={() => setShowLogout(false)} onConfirm={handleLogout} />
       )}
       {questModal && (
         <QuestStartModal
@@ -322,21 +197,20 @@ export default function App() {
         <LessonScreen
           lang={activeLesson.lang}
           levelIndex={activeLesson.levelIndex}
+          title={activeLesson.title}
           onClose={() => setActiveLesson(null)}
           onComplete={() => {
             setActiveLesson(null)
-            showToast(`🏆 Lesson complete! Keep going!`)
+            showToast('🏆 Lesson complete! Keep going!')
           }}
         />
       )}
 
       {/* ── Toast ── */}
-      {toast && <Toast msg={toast} onDone={() => setToast(null)} />}
+      {toast && <Toast msg={toast} onDone={clearToast} />}
 
       {/* ── Login Gate (full-screen overlay when logged out) ── */}
-      {!isLoggedIn && (
-        <LoginGate onOpen={() => setShowAuth(true)} />
-      )}
+      {!isLoggedIn && <LoginGate onOpen={() => setShowAuth(true)} />}
 
       {/* ── Onboarding Wizard ── */}
       {showOnboarding && isLoggedIn && (
@@ -345,13 +219,8 @@ export default function App() {
 
       {/* ── PWA Install Banner ── */}
       {showPwaBanner && (
-        <PWAInstallBanner
-          prompt={pwaPrompt}
-          onInstall={handlePwaInstall}
-          onDismiss={handlePwaDismiss}
-        />
+        <PWAInstallBanner onInstall={handlePwaInstall} onDismiss={handlePwaDismiss} />
       )}
     </div>
-    </GameProvider>
   )
 }

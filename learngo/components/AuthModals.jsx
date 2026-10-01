@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react'
 import { X, Eye, EyeOff, Mail, Lock, User, Loader, ArrowRight, LogOut } from 'lucide-react'
 import { FoxMascot } from './Header'

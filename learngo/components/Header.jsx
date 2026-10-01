@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react'
 import {
   Bell, Flame, Star, ChevronDown, LogOut, Settings,

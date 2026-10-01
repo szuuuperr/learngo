@@ -1,3 +1,5 @@
+'use client'
+
 import React, { createContext, useContext, useReducer, useCallback, useEffect, useRef } from 'react'
 
 // ─── Persistence helpers ───────────────────────────────────────────────────────
@@ -59,18 +61,17 @@ const INITIAL_DEFAULTS = {
   toastMsg: null,
 }
 
-function buildInitial() {
-  const saved = loadSaved()
-  const merged = { ...INITIAL_DEFAULTS }
-  for (const k of SAVED_FIELDS) {
-    if (saved[k] !== undefined) merged[k] = saved[k]
-  }
-  return merged
-}
-
 // ─── Reducer ──────────────────────────────────────────────────────────────────
 function reducer(state, action) {
   switch (action.type) {
+
+    case 'HYDRATE': {
+      const next = { ...state }
+      for (const k of SAVED_FIELDS) {
+        if (action.saved[k] !== undefined) next[k] = action.saved[k]
+      }
+      return next
+    }
 
     case 'EARN_XP': {
       const newXP = state.xp + action.amount
@@ -148,11 +149,25 @@ function reducer(state, action) {
 const GameContext = createContext(null)
 
 export function GameProvider({ children }) {
-  const [state, dispatch] = useReducer(reducer, null, buildInitial)
+  // Start from the defaults on BOTH server and first client render, then pull
+  // the saved state in from localStorage after mount. Reading localStorage in
+  // the useReducer initializer would produce different HTML on the server and
+  // the client, which React reports as a hydration mismatch.
+  const [state, dispatch] = useReducer(reducer, INITIAL_DEFAULTS)
   const saveTimer = useRef(null)
+  const hydrated = useRef(false)
 
-  // Debounced save to localStorage (600ms)
+  // Hydrate from localStorage after mount.
   useEffect(() => {
+    const saved = loadSaved()
+    if (Object.keys(saved).length > 0) dispatch({ type: 'HYDRATE', saved })
+    hydrated.current = true
+  }, [])
+
+  // Debounced save to localStorage (600ms). Skipped until hydration finished so
+  // the defaults never overwrite the saved state.
+  useEffect(() => {
+    if (!hydrated.current) return
     if (saveTimer.current) clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(() => {
       const toSave = {}

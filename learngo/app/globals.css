@@ -2,12 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* DaisyUI theme is declared on <html data-theme="learngo">. If the attribute
+   ever goes missing, fall back to the same dark palette so the app never
+   flashes light mode. */
+:root,
+[data-theme='learngo'] {
+  color-scheme: dark;
+}
+
 @layer base {
   * { box-sizing: border-box; }
   body {
     background-color: #0F172A;
     color: #FFFFFF;
-    font-family: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
+    font-family: var(--font-jakarta), Inter, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
@@ -117,7 +125,7 @@
     background-color: #131B2E;
     border-radius: 0.75rem;
     border: 1px solid rgba(255,255,255,0.05);
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-family: var(--font-jetbrains), 'Fira Code', monospace;
     font-size: 0.875rem;
     overflow-x: auto;
   }

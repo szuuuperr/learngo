@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react'
 import {
   Flame, Star, Trophy, Zap, Play, CheckCircle,
@@ -190,7 +192,7 @@ function StreakCalendar() {
     <div className="glass-card rounded-2xl border border-white/8 p-4">
       <div className="flex items-center gap-2 mb-3">
         <Flame size={16} className="text-orange-DEFAULT" />
-        <span className="text-sm font-bold text-white">This Week's Streak</span>
+        <span className="text-sm font-bold text-white">This Week&apos;s Streak</span>
         <span className="badge-xp ml-auto">{streak} days 🔥</span>
       </div>
       <div className="flex gap-2 justify-between">

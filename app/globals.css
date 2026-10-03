@@ -1,0 +1,184 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* DaisyUI theme is declared on <html data-theme="learngo">. If the attribute
+   ever goes missing, fall back to the same dark palette so the app never
+   flashes light mode. */
+/* Palette values are lifted straight from the Illustrator source in
+   public/learngo/Mockup*.svg — the .stN classes there are the design's own
+   colour definitions, so these hexes stay in sync with the artwork rather than
+   being eyeballed. */
+:root,
+[data-theme='learngo'] {
+  color-scheme: dark;
+  --lg-bg: #212649;        /* .st0  page canvas */
+  --lg-surface: #323868;   /* .st13 card fill */
+  --lg-raised: #212649;    /* .st3  elevated pills, badges */
+  --lg-hero: #323868;      /* .st4  hero / banner cards */
+  --lg-border: #313668;    /* .st33 hairline borders */
+  --lg-orange: #FF7A00;    /* .st1  primary */
+  --lg-orange-deep: #F45D00;
+  --lg-orange-bright: #FF4800;
+  --lg-orange-glow: #F98B30;
+  --lg-cream: #FFF0D5;     /* .st15 text on orange */
+  --lg-gold: #F0D080;      /* .st22 accent */
+  --lg-danger: #EA1B1B;    /* .st5  alert dot */
+  --lg-muted: #8B8CA5;     /* .st17 secondary text */
+  --lg-muted-soft: #8B8CA5;
+  --lg-dim: #6B72A0;       /* tertiary text */
+}
+
+@layer base {
+  * { box-sizing: border-box; }
+  body {
+    background-color: #212649;
+    color: #FFFFFF;
+    font-family: var(--font-gummy), 'Trebuchet MS', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #212649; }
+  ::-webkit-scrollbar-thumb { background: #313668; border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #8B8CA5; }
+}
+
+@layer components {
+  .glass-card {
+    background: #323868;
+    border: 1px solid #313668;
+  }
+  .glass-card-hover {
+    transition: background-color 0.25s ease, border-color 0.25s ease;
+  }
+  .glass-card-hover:hover {
+    background: #212649;
+    border-color: rgba(255, 122, 0, 0.35);
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #FF7A00;
+    color: #ffffff;
+    font-weight: 700;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.875rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-primary:hover { background-color: #F98B30; }
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #212649;
+    color: #ffffff;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.875rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    border: 1px solid #313668;
+    cursor: pointer;
+  }
+  .btn-secondary:hover { background-color: #323868; }
+  /* Bottom nav is flat in the reference: no pill behind the icon, the active
+     tab is carried by colour alone. */
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    color: #8B8CA5;
+    transition: color 0.2s ease;
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+  }
+  .nav-item:hover { color: #FFFFFF; }
+  .nav-item.active { color: #FF7A00; }
+  .badge-xp {
+    background-color: rgba(255, 122, 0, 0.16);
+    color: #FF7A00;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.125rem 0.625rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 122, 0, 0.35);
+  }
+  .tag-pill {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.125rem 0.625rem;
+    border-radius: 9999px;
+  }
+  .input-dark {
+    background-color: #212649;
+    border: 1px solid #313668;
+    color: #ffffff;
+    border-radius: 0.875rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    outline: none;
+    width: 100%;
+  }
+  .input-dark::placeholder { color: #8B8CA5; }
+  .input-dark:focus {
+    border-color: rgba(255, 122, 0, 0.6);
+  }
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.025em;
+  }
+  .code-block {
+    background-color: #212649;
+    border-radius: 0.875rem;
+    border: 1px solid #313668;
+    font-family: var(--font-jetbrains), 'Fira Code', monospace;
+    font-size: 0.875rem;
+    overflow-x: auto;
+  }
+}
+
+/* Flat design: ring glow dimatikan, tidak ada efek cahaya. */
+.ring-orange-glow,
+.ring-cyan-glow {
+  box-shadow: none;
+}
+
+/* Progress bar animation */
+@keyframes progressFill {
+  from { width: 0%; }
+  to   { width: var(--progress-width); }
+}
+.progress-animated {
+  animation: progressFill 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Flat background: pola titik dihapus, latar solid. */
+.dot-grid {
+  background-color: #212649;
+}
+
+/* Hide scrollbars but keep scrolling — used for horizontal quest cards */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Icon container — replaces emoji wrappers throughout the app */
+.icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+}
+.icon-box-sm { width: 2rem; height: 2rem; }
+.icon-box-md { width: 2.5rem; height: 2.5rem; }
+.icon-box-lg { width: 3rem; height: 3rem; }

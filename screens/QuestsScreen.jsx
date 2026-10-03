@@ -100,8 +100,8 @@ function AchievementBadge({ a }) {
   return (
     <div className={`glass-card rounded-2xl p-4 border text-center transition-all duration-200
       ${a.unlocked ? 'border-orange/25 bg-orange/5 hover:border-orange/40' : 'border-indigo opacity-50'}`}>
-      {/* Kolom icon di database masih menyimpan glyph; kalau kosong, kartu ini
-          jatuh ke lencana Award supaya tidak pernah menampilkan kotak kosong. */}
+      {/* Kolom icon di database masih menyimpan glyph; kalau kosong, jatuh ke lencana
+          Award supaya tidak pernah menampilkan kotak kosong. */}
       <div className="mb-2 flex justify-center">
         {a.icon
           ? <span className={`text-3xl leading-none ${!a.unlocked ? 'grayscale' : ''}`}>{a.icon}</span>
@@ -304,7 +304,6 @@ export default function QuestsScreen({ onNavigate }) {
 
   return (
     <div className="animate-fade-in space-y-5">
-      {/* Header + XP Ring */}
       <div className="glass-card rounded-2xl border border-white/10 p-5 relative overflow-hidden">
         <div className="flex items-center gap-5">
           <XPRing xp={xp} xpToNext={xpToNext} level={level} />
@@ -335,10 +334,8 @@ export default function QuestsScreen({ onNavigate }) {
         </div>
       </div>
 
-      {/* Streak Calendar */}
       <StreakCalendar />
 
-      {/* Tab switcher */}
       <div className="flex bg-obsidian rounded-xl border border-indigo p-0.5 gap-0.5">
         {[
           { id: 'quests',       label: 'Daily Quests', Icon: Zap },
@@ -354,7 +351,6 @@ export default function QuestsScreen({ onNavigate }) {
         ))}
       </div>
 
-      {/* Tab content */}
       {tab === 'quests' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {catalogLoading && quests.length === 0 ? (

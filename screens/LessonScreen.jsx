@@ -706,7 +706,6 @@ export default function LessonScreen({ lang = 'python', levelIndex = 0, title = 
                 </div>
               </div>
 
-              {/* Code block */}
               {lesson.codeLines && lesson.codeLines.length > 0 && (
                 <div style={{ padding: '2px 20px 14px' }}>
                   <CodeBlock
@@ -719,7 +718,6 @@ export default function LessonScreen({ lang = 'python', levelIndex = 0, title = 
                 </div>
               )}
 
-              {/* Options */}
               <div style={{ padding: '0 20px 14px', display: 'flex', flexDirection: 'column', gap: 9 }}>
                 {lesson.options.map((opt, i) => (
                   <OptionBtn
@@ -746,7 +744,6 @@ export default function LessonScreen({ lang = 'python', levelIndex = 0, title = 
               {confirmed && <div style={{ height: 180 }}/>}
             </div>
 
-            {/* Check button (before answer) */}
             {!confirmed && (
               <div style={{
                 position: 'sticky', bottom: 0, background: T.bg,
@@ -758,7 +755,6 @@ export default function LessonScreen({ lang = 'python', levelIndex = 0, title = 
               </div>
             )}
 
-            {/* Feedback panel (after answer) */}
             {confirmed && (
               <div ref={feedbackRef} style={{
                 position: 'sticky', bottom: 0, background: T.bg,
@@ -766,7 +762,6 @@ export default function LessonScreen({ lang = 'python', levelIndex = 0, title = 
                 padding: '14px 20px 20px',
                 animation: 'fadeSlideUp 0.3s ease-out',
               }}>
-                {/* Result banner */}
                 <div style={{
                   borderRadius: 12, padding: '11px 16px', marginBottom: 12,
                   background: lastCorrect ? 'rgba(52,211,153,0.1)' : 'rgba(248,113,113,0.08)',
@@ -786,7 +781,6 @@ export default function LessonScreen({ lang = 'python', levelIndex = 0, title = 
                   </p>
                 </div>
 
-                {/* Next button */}
                 <button
                   onClick={handleNext}
                   style={{

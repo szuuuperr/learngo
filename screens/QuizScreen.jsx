@@ -261,7 +261,6 @@ export default function QuizScreen() {
 
   return (
     <div className="max-w-2xl mx-auto py-6 animate-fade-in">
-      {/* Progress */}
       <div className="flex items-center justify-between mb-4">
         <span className="text-xs font-semibold text-slate">
           Soal {index + 1} dari {QUIZ_QUESTIONS.length}
@@ -290,10 +289,9 @@ export default function QuizScreen() {
           {question.question}
         </p>
 
-        {/* Answer states are colour-coded but also carry an icon and a text label,
-            so the result never depends on telling green from red alone.
-            Wrong answers use red rather than the brand orange, which would
-            otherwise read as "selected" instead of "incorrect". */}
+        {/* Answer states are colour-coded but also carry an icon and a text label, so
+            the result never depends on telling green from red alone. Wrong answers
+            use red, not brand orange, which would read as "selected" not "incorrect". */}
         <div className="space-y-2">
           {question.options.map((opt, i) => {
             const chosen = answered?.choice === i

@@ -208,7 +208,6 @@ export default function OtherScreen({ onLogout, onNavigate }) {
 
   return (
     <div className="animate-fade-in space-y-5">
-      {/* Profile Card */}
       <div className="glass-card rounded-2xl border border-white/10 p-5 relative overflow-hidden">
         <div className="relative flex items-center gap-4">
           <div className="relative">
@@ -262,7 +261,6 @@ export default function OtherScreen({ onLogout, onNavigate }) {
         </div>
       </div>
 
-      {/* Quiz link + certification status */}
       {onNavigate && (
         <button
           onClick={() => onNavigate('quiz')}
@@ -304,7 +302,6 @@ export default function OtherScreen({ onLogout, onNavigate }) {
         </button>
       )}
 
-      {/* Tab switcher */}
       <div className="flex glass-card rounded-xl border border-white/10 p-0.5 gap-0.5">
         {[
           { id: 'settings', label: 'Settings', Icon: Settings },
@@ -323,7 +320,6 @@ export default function OtherScreen({ onLogout, onNavigate }) {
 
       {activeTab === 'settings' && (
         <div className="space-y-4">
-          {/* AI Settings */}
           <SettingsSection title="AI Tutor Preferences">
             <SettingsRow
               icon={Brain}
@@ -339,7 +335,6 @@ export default function OtherScreen({ onLogout, onNavigate }) {
             />
           </SettingsSection>
 
-          {/* Account */}
           <SettingsSection title="Account">
             <SettingsRow
               icon={RotateCcw}
@@ -360,7 +355,6 @@ export default function OtherScreen({ onLogout, onNavigate }) {
 
       {activeTab === 'help' && (
         <div className="space-y-4">
-          {/* Quick links */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[
               { icon: MessageSquare, label: 'Contact Support', color: 'text-cyan', bg: 'bg-cyan/10', border: 'border-cyan/25' },
@@ -375,7 +369,6 @@ export default function OtherScreen({ onLogout, onNavigate }) {
             ))}
           </div>
 
-          {/* FAQ */}
           <div>
             <p className="text-sm font-semibold text-white mb-3">Frequently Asked Questions</p>
             <div className="space-y-2">
@@ -383,7 +376,6 @@ export default function OtherScreen({ onLogout, onNavigate }) {
             </div>
           </div>
 
-          {/* App info */}
           <div className="glass-card rounded-2xl border border-white/10 p-4 text-center">
             <FoxMascot size={40} animated />
             <p className="font-extrabold text-white mt-2">LearnGo v1.0.0</p>
@@ -393,7 +385,6 @@ export default function OtherScreen({ onLogout, onNavigate }) {
         </div>
       )}
 
-      {/* ── Certification Popup ── */}
       {showCertPopup && (
         <CertificationPopup onClose={() => {
           // So the celebration only interrupts once; the profile badge is the lasting artifact.

@@ -150,10 +150,8 @@ export default function OnboardingScreen({ onDone }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#212649] overflow-y-auto">
       <div className="relative w-full max-w-sm mx-auto px-6 py-12 flex flex-col items-center gap-8">
-        {/* Dots indicator */}
         <Dots total={3} current={step} />
 
-        {/* Step content */}
         {step === 0 && (
           <StepWelcome onNext={() => setStep(1)} />
         )}
